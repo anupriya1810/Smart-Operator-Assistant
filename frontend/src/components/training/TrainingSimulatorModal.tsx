@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Award, CheckCircle, AlertTriangle, ShieldCheck, Zap, X } from 'lucide-react';
+import { Award, CheckCircle, AlertTriangle, ShieldCheck, Zap, X, Radio, Shield, Laptop, BookOpen } from 'lucide-react';
 
 interface ScenarioOption {
   id: string;
@@ -13,12 +13,14 @@ interface ScenarioOption {
 
 interface Scenario {
   id: string;
+  category?: 'portal' | 'safety';
   title: string;
   task_type: string;
   weather: string;
   machine_age_yrs: number;
   active_condition: string;
   difficulty: string;
+  portal_feature?: string;
   options: ScenarioOption[];
 }
 
@@ -42,12 +44,17 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
   onSubmitDecision,
 }) => {
   const { t } = useTranslation();
+  const [filterCategory, setFilterCategory] = useState<'all' | 'portal' | 'safety'>('all');
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(
     Math.max(0, scenarios.findIndex(s => s.id === recommendedScenarioId))
   );
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [result, setResult] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const filteredScenarios = filterCategory === 'all'
+    ? scenarios
+    : scenarios.filter(s => s.category === filterCategory);
 
   const currentScenario = scenarios[selectedScenarioIndex] || scenarios[0];
 
@@ -77,18 +84,18 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
       left: 0,
       width: '100vw',
       height: '100vh',
-      backgroundColor: 'rgba(0, 0, 0, 0.65)',
+      backgroundColor: 'rgba(15, 23, 42, 0.6)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 9998,
       padding: '1rem',
-      backdropFilter: 'blur(4px)'
+      backdropFilter: 'blur(6px)'
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '700px',
-        maxHeight: '90vh',
+        maxWidth: '740px',
+        maxHeight: '92vh',
         overflowY: 'auto',
         backgroundColor: '#FFFFFF',
         borderRadius: '16px',
@@ -103,10 +110,22 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
         {/* Top Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span className="cat-badge badge-yellow">{t('scenarioSimulator')}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span className="cat-badge badge-black">
+                <BookOpen size={12} />
+                OPERATOR SIMULATOR &amp; TRAINING
+              </span>
+              {currentScenario?.category === 'portal' ? (
+                <span className="cat-badge badge-blue">
+                  <Laptop size={12} /> Portal Skills Training
+                </span>
+              ) : (
+                <span className="cat-badge badge-yellow">
+                  <Shield size={12} /> Jobsite Safety Training
+                </span>
+              )}
               {currentScenario?.id === recommendedScenarioId && (
-                <span className="cat-badge badge-blue">★ Telemetry Recommended</span>
+                <span className="cat-badge badge-green">★ Telemetry Recommended</span>
               )}
             </div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginTop: '0.4rem' }}>
@@ -122,6 +141,109 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
           </button>
         </div>
 
+        {/* Curriculum Pillar Filter Tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '4px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+          <button
+            onClick={() => setFilterCategory('all')}
+            style={{
+              flex: 1,
+              padding: '0.4rem 0.75rem',
+              borderRadius: '6px',
+              border: 'none',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              backgroundColor: filterCategory === 'all' ? '#FFFFFF' : 'transparent',
+              color: filterCategory === 'all' ? '#0F172A' : '#64748B',
+              boxShadow: filterCategory === 'all' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none'
+            }}
+          >
+            All Modules ({scenarios.length})
+          </button>
+          <button
+            onClick={() => setFilterCategory('portal')}
+            style={{
+              flex: 1,
+              padding: '0.4rem 0.75rem',
+              borderRadius: '6px',
+              border: 'none',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              backgroundColor: filterCategory === 'portal' ? '#FFFFFF' : 'transparent',
+              color: filterCategory === 'portal' ? '#1D4ED8' : '#64748B',
+              boxShadow: filterCategory === 'portal' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            <Laptop size={13} />
+            Portal Usage ({scenarios.filter(s => s.category === 'portal').length})
+          </button>
+          <button
+            onClick={() => setFilterCategory('safety')}
+            style={{
+              flex: 1,
+              padding: '0.4rem 0.75rem',
+              borderRadius: '6px',
+              border: 'none',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              backgroundColor: filterCategory === 'safety' ? '#FFFFFF' : 'transparent',
+              color: filterCategory === 'safety' ? '#B45309' : '#64748B',
+              boxShadow: filterCategory === 'safety' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            <Shield size={13} />
+            Jobsite Safety ({scenarios.filter(s => s.category === 'safety').length})
+          </button>
+        </div>
+
+        {/* Scenario Carousel / Quick Selector */}
+        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '2px' }}>
+          {filteredScenarios.map((s) => {
+            const originalIndex = scenarios.findIndex(orig => orig.id === s.id);
+            const isSelected = originalIndex === selectedScenarioIndex;
+            const isCompleted = operatorProgress.completed_scenarios.includes(s.id);
+
+            return (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setResult(null);
+                  setSelectedOptionId(null);
+                  setSelectedScenarioIndex(originalIndex);
+                }}
+                style={{
+                  padding: '0.5rem 0.85rem',
+                  borderRadius: '8px',
+                  border: isSelected ? '1.5px solid #F59E0B' : '1px solid #E2E8F0',
+                  backgroundColor: isSelected ? '#FEF3C7' : '#FFFFFF',
+                  color: isSelected ? '#92400E' : '#334155',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  boxShadow: isSelected ? '0 1px 3px rgba(245, 158, 11, 0.15)' : 'none'
+                }}
+              >
+                {isCompleted && <span style={{ color: '#059669' }}>✓</span>}
+                <span>{s.category === 'portal' ? '💻' : '🛡️'} {s.title.slice(0, 26)}...</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Operator Current Stats */}
         <div style={{
           display: 'flex',
@@ -133,13 +255,13 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
           border: '1px solid #E2E8F0'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0F172A', fontWeight: 600 }}>
-            <Award size={20} color="#D97706" />
-            <span>Score: <strong style={{ color: '#D97706' }}>{operatorProgress.points}</strong> pts</span>
+            <Award size={18} color="#D97706" />
+            <span>Operator Training Score: <strong style={{ color: '#D97706' }}>{operatorProgress.points}</strong> pts</span>
           </div>
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {operatorProgress.badges.map((b, idx) => (
-              <span key={idx} className="cat-badge badge-green" style={{ fontSize: '0.75rem' }}>
+              <span key={idx} className="cat-badge badge-green" style={{ fontSize: '0.72rem' }}>
                 🏅 {b}
               </span>
             ))}
@@ -164,17 +286,24 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             color: '#64748B',
             flexWrap: 'wrap'
           }}>
-            <span>Task: <strong style={{ color: '#334155' }}>{currentScenario?.task_type}</strong></span>
+            <span>Category: <strong style={{ color: currentScenario?.category === 'portal' ? '#1D4ED8' : '#B45309' }}>{currentScenario?.category === 'portal' ? 'Portal Operations' : 'Jobsite Safety'}</strong></span>
+            <span>&bull;</span>
+            <span>Machine: <strong style={{ color: '#334155' }}>Cat 320 ({currentScenario?.machine_age_yrs} yrs)</strong></span>
             <span>&bull;</span>
             <span>Weather: <strong style={{ color: '#334155' }}>{currentScenario?.weather}</strong></span>
-            <span>&bull;</span>
-            <span>Machine Age: <strong style={{ color: '#334155' }}>{currentScenario?.machine_age_yrs} yrs</strong></span>
             <span>&bull;</span>
             <span>Difficulty: <strong style={{ color: '#334155' }}>{currentScenario?.difficulty}</strong></span>
           </div>
 
+          {currentScenario?.portal_feature && (
+            <div style={{ fontSize: '0.8rem', color: '#1E40AF', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', padding: '0.35rem 0.65rem', borderRadius: '6px', marginBottom: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Radio size={13} color="#2563EB" />
+              <span>Target Portal Feature: <strong>{currentScenario.portal_feature}</strong></span>
+            </div>
+          )}
+
           <div style={{ fontSize: '0.95rem', lineHeight: '1.5', color: '#0F172A', fontWeight: 500 }}>
-            <strong style={{ color: '#0F172A' }}>Active Cabin Condition:</strong> {currentScenario?.active_condition}
+            <strong style={{ color: '#0F172A' }}>In-Cab Situation:</strong> {currentScenario?.active_condition}
           </div>
         </div>
 
@@ -182,7 +311,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
         {!result ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-              Select Operator Protocol:
+              Choose Operator Action / Protocol:
             </div>
 
             {currentScenario?.options.map(opt => (
@@ -234,7 +363,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                 cursor: !selectedOptionId ? 'not-allowed' : 'pointer'
               }}
             >
-              {loading ? 'Evaluating...' : t('submitChoice')}
+              {loading ? 'Evaluating Protocol...' : t('submitChoice')}
             </button>
           </div>
         ) : (
@@ -253,7 +382,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.05rem', color: result.safety_score >= 80 ? '#065F46' : '#991B1B' }}>
                 {result.safety_score >= 80 ? <CheckCircle size={22} /> : <AlertTriangle size={22} />}
-                <span>{result.safety_score >= 80 ? 'Safe & Compliant Protocol' : 'Safety Violation Risk'}</span>
+                <span>{result.safety_score >= 80 ? 'Correct Protocol & Portal Mastery' : 'Safety / Protocol Violation'}</span>
               </div>
               <div style={{ fontSize: '0.85rem', color: '#92400E', fontWeight: 700, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '2px 8px', borderRadius: '4px' }}>
                 +{result.safety_score + result.efficiency_score} pts
@@ -265,7 +394,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               <div style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '0.85rem', borderRadius: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#065F46', fontWeight: 600 }}>
                   <ShieldCheck size={15} color="#065F46" />
-                  <span>Safety Impact</span>
+                  <span>Safety Compliance</span>
                 </div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#065F46' }}>
                   {result.safety_score}%
@@ -275,7 +404,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', padding: '0.85rem', borderRadius: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#92400E', fontWeight: 600 }}>
                   <Zap size={15} color="#D97706" />
-                  <span>Efficiency Impact</span>
+                  <span>Portal &amp; Operational Efficiency</span>
                 </div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#92400E' }}>
                   {result.efficiency_score}%
@@ -284,7 +413,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             </div>
 
             <div style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.5', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.85rem', borderRadius: '8px' }}>
-              <strong style={{ color: '#0F172A' }}>Briefing:</strong> {result.feedback}
+              <strong style={{ color: '#0F172A' }}>Instructor Briefing:</strong> {result.feedback}
             </div>
 
             {result.badge_unlocked && (
@@ -311,7 +440,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               className="cat-btn cat-btn-primary"
               style={{ marginTop: '0.5rem' }}
             >
-              Continue to Next Scenario
+              Continue to Next Module
             </button>
           </div>
         )}

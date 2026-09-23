@@ -345,21 +345,28 @@ export function App() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: '#0F172A', fontSize: '0.95rem' }}>
                         <GraduationCap size={18} color="#D97706" />
-                        <span>Daily Scenario Recommendation</span>
+                        <span>Portal &amp; Safety Simulator</span>
                       </div>
-                      <span className="cat-badge badge-black">Score: {trainingData.operator_progress.points}</span>
+                      <span className="cat-badge badge-black">Score: {trainingData.operator_progress.points} pts</span>
                     </div>
 
-                    <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '1rem', lineHeight: '1.4' }}>
-                      Suggested scenario: <strong style={{ color: '#0F172A' }}>{trainingData.scenarios.find(s => s.id === trainingData.recommended_scenario_id)?.title || 'Cabin Safety Protocol'}</strong>
+                    <p style={{ fontSize: '0.85rem', color: '#64748B', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+                      Interactive modules for mastering in-cab portal tools (voice co-pilot, 45s SOS) and critical cabin safety protocols.
                     </p>
+
+                    <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.5rem 0.75rem', borderRadius: '6px', marginBottom: '0.85rem', fontSize: '0.8rem' }}>
+                      <span style={{ color: '#64748B' }}>Telemetry Recommendation: </span>
+                      <strong style={{ color: '#0F172A' }}>
+                        {trainingData.scenarios.find(s => s.id === trainingData.recommended_scenario_id)?.title || 'Portal & Safety Training'}
+                      </strong>
+                    </div>
 
                     <button
                       onClick={() => setShowTrainingModal(true)}
                       className="cat-btn cat-btn-primary"
                       style={{ width: '100%', minHeight: '42px', fontSize: '0.875rem' }}
                     >
-                      Launch 2D Decision Simulator
+                      Launch Operator Simulator
                     </button>
                   </div>
                 )}

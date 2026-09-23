@@ -470,10 +470,10 @@ def predict_task_duration(payload: Dict[str, Any]):
 @app.get("/api/training/scenarios")
 def get_training_scenarios(operator_id: Optional[str] = None):
     # Recommend scenario based on operator telemetry flags
-    recommended_id = "SCEN-001"
+    recommended_id = "SCEN-PORTAL-01"
     if operator_id == "OP1001":
         # OP1001 had seatbelt / excessive idle in telemetry
-        recommended_id = "SCEN-002"
+        recommended_id = "SCEN-SAFE-01"
 
     return {
         "scenarios": SCENARIOS,

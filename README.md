@@ -59,10 +59,11 @@ All timestamps are stored in **UTC ISO format (`YYYY-MM-DDTHH:MM:SSZ`)** and aut
   - Automatic escalation to supervisor if timeout expires.
 - **Multilingual Support (i18n)**:
   - English, हिन्दी (Hindi), and Español (Spanish) with persistent local profile caching.
-- **2D Decision Simulator Training Hub**:
-  - Structured JSON scenarios (e.g. trenching in rain with proximity sensor warning).
-  - Multi-choice choices evaluating Safety Impact % and Efficiency Impact %.
-  - Points and badge rewards (`Proximity Guardian`, `Eco-Operator Master`).
+- **Operator Portal & Safety Training Simulation Hub**:
+  - **Portal Usage Training**: Interactive simulator teaching operators how to navigate and use the in-cab assistant (hands-free voice command logging, responding to 45-second SOS emergency countdowns, and tracking task duration variance).
+  - **Jobsite & Machine Safety**: Scenarios addressing seatbelt interlocks, ghost idling fuel penalties, blind-spot ground crew proximity alarms, and steep slope stability.
+  - Multi-choice choices evaluating Safety Compliance % and Operational Efficiency %.
+  - Gamified points, progress tracking, and badge rewards (`Voice Co-Pilot Certified`, `Rapid Responder`, `Proximity Guardian`, `Eco-Operator Master`).
 
 ### 2. Supervisor Office Command Center
 - **Fleet Custody & Rental Management**:
