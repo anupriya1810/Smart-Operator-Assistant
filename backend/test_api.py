@@ -50,6 +50,14 @@ def test_backend_integrity():
     print(f"[OK] Anomaly Detector test: Ghost Idle: {anomaly['is_ghost_idle']}, Cost: ${anomaly['estimated_idle_cost_usd']}")
     assert anomaly["is_ghost_idle"] is True, "60 min idle with 1 cycle should be flagged as ghost idle"
 
+    # 8. Test ML XGBoost Prediction & SHAP Attribution Service
+    from services.ml_prediction_service import predict_task_duration
+    ml_pred = predict_task_duration("Earth Excavation", "OP1001", "EXC001", 40.7128, -74.006, "2026-09-23T10:00:00Z", 60.0)
+    print(f"[OK] ML XGBoost Pipeline test: Predicted {ml_pred['predicted_time_min']} min, Factors count: {len(ml_pred['top_factors'])}")
+    assert ml_pred["predicted_time_min"] > 0, "Predicted duration should be positive"
+    assert len(ml_pred["top_factors"]) > 0, "Top factors should not be empty"
+    assert "explanation" in ml_pred and len(ml_pred["explanation"]) > 0, "Explanation should be present"
+
     print("\nALL BACKEND INTEGRITY CHECKS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":

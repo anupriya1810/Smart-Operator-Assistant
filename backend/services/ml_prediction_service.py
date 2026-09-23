@@ -5,6 +5,8 @@ Loads the trained XGBoost model and SHAP TreeExplainer to deliver real-time
 task duration predictions with dynamic factor attributions.
 """
 
+import os
+os.environ.setdefault("OMP_NUM_THREADS", "1")
 import json
 import joblib
 import pandas as pd
@@ -207,9 +209,16 @@ def predict_task_duration(
         delta = round(predicted_time_min - baseline_est, 1)
         top_factors = [{"feature": "Overall Site & Equipment Factors", "impact_min": delta}]
 
+    explanation_parts = [
+        f"{f['feature']} ({'+' if f['impact_min'] > 0 else ''}{f['impact_min']}m)"
+        for f in top_factors if abs(f.get('impact_min', 0)) >= 0.1
+    ]
+    explanation = " | ".join(explanation_parts) if explanation_parts else "Nominal operating conditions"
+
     return {
         "predicted_time_min": predicted_time_min,
         "estimated_time_min": round(baseline_est, 1),
+        "explanation": explanation,
         "top_factors": top_factors,
         "engineered_features": {
             "operator_reliability_score": features["operator_reliability_score"],

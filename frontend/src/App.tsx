@@ -13,7 +13,8 @@ import { SafetyAlertMonitor } from './components/supervisor/SafetyAlertMonitor';
 import type { AlertItem } from './components/supervisor/SafetyAlertMonitor';
 import { IdleAnomalyPanel } from './components/supervisor/IdleAnomalyPanel';
 import type { TelemetryAnomaly } from './components/supervisor/IdleAnomalyPanel';
-import { AlertOctagon, GraduationCap, PlusCircle, RefreshCw, HardHat } from 'lucide-react';
+import { FleetGpsTracker } from './components/supervisor/FleetGpsTracker';
+import { AlertOctagon, GraduationCap, PlusCircle, RefreshCw, HardHat, CloudRain } from 'lucide-react';
 import './i18n/translations';
 
 const API_BASE = 'http://127.0.0.1:8000';
@@ -193,6 +194,19 @@ export function App() {
       body: JSON.stringify(taskData)
     });
     fetchData();
+  };
+
+  const handleWeatherApproval = async (taskId: string, action: 'approve' | 'postpone') => {
+    try {
+      await fetch(`${API_BASE}/api/tasks/${taskId}/weather-approval`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ supervisor_id: 'SUP001', action })
+      });
+      fetchData();
+    } catch (e) {
+      console.error('Weather approval error:', e);
+    }
   };
 
   const handleSubmitScenarioDecision = async (scenarioId: string, optionId: string) => {
@@ -431,12 +445,86 @@ export function App() {
               </div>
             </div>
 
+            {/* Weather Re-Approval Gate for High Wind / Heavy Rain Hazards */}
+            {tasks.filter(t => t.weather_reapproval_required).length > 0 && (
+              <div style={{
+                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                border: '1px solid var(--cat-warning)',
+                borderRadius: '10px',
+                padding: '1.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--cat-warning)', fontWeight: 800, fontSize: '0.95rem' }}>
+                    <CloudRain size={20} />
+                    <span>WEATHER RE-APPROVAL GATE ({tasks.filter(t => t.weather_reapproval_required).length} Tasks Awaiting Authorization)</span>
+                  </div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--theme-text-muted)' }}>Automated High Wind / Precipitation Safeguard</span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {tasks.filter(t => t.weather_reapproval_required).map(t => (
+                    <div
+                      key={t.task_id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(234, 179, 8, 0.25)',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '6px',
+                        flexWrap: 'wrap',
+                        gap: '0.75rem'
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontWeight: 800, color: 'var(--theme-text-primary)' }}>{t.task_type}</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--cat-yellow)', backgroundColor: '#111', padding: '1px 6px', borderRadius: '4px' }}>{t.task_id}</span>
+                          <span className="cat-badge" style={{ backgroundColor: 'rgba(234, 179, 8, 0.2)', color: 'var(--cat-warning)' }}>
+                            Weather: {t.weather}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--theme-text-secondary)', marginTop: '2px' }}>
+                          Zone: <strong>{t.location_zone}</strong> &bull; Machine: {t.machine_model || t.machine_id} &bull; Driver: {t.operator_name || t.operator_id}
+                        </div>
+                        {t.notes && <div style={{ fontSize: '0.75rem', color: 'var(--theme-text-muted)', fontStyle: 'italic', marginTop: '2px' }}>"{t.notes}"</div>}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => handleWeatherApproval(t.task_id, 'approve')}
+                          className="cat-btn cat-btn-primary"
+                          style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', minHeight: '34px' }}
+                        >
+                          Authorize Exception
+                        </button>
+                        <button
+                          onClick={() => handleWeatherApproval(t.task_id, 'postpone')}
+                          className="cat-btn cat-btn-outline"
+                          style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', minHeight: '34px' }}
+                        >
+                          Postpone Dispatch
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Safety Alert Monitor */}
             <SafetyAlertMonitor
               alerts={alerts}
               supervisorTimezone="America/New_York"
               onRefresh={fetchData}
             />
+
+            {/* Fleet GPS Live Telemetry & Geofence Radar */}
+            <FleetGpsTracker supervisorTimezone="America/New_York" />
 
             {/* Fleet & Custody Tracking */}
             <FleetCustodyView

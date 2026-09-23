@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShieldAlert, CheckCircle, Clock, BellRing, ChevronDown, ChevronUp } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Clock, BellRing, ChevronDown, ChevronUp, GraduationCap } from 'lucide-react';
 import { formatUtcToLocal } from '../../utils/timezone';
 
 export interface AlertItem {
@@ -31,6 +31,24 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
 }) => {
   const { t } = useTranslation();
   const [showResolvedList, setShowResolvedList] = useState(true);
+  const [assignedNotice, setAssignedNotice] = useState<string | null>(null);
+
+  const handleAssignTraining = async (alertId: string, operatorId: string) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/alerts/${alertId}/assign-training`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario_id: 'SCEN-SAFE-01' })
+      });
+      if (res.ok) {
+        setAssignedNotice(`Remedial Safety Simulator Module assigned to operator ${operatorId}.`);
+        setTimeout(() => setAssignedNotice(null), 5000);
+        onRefresh();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const activeAlerts = alerts.filter(a => a.status === 'active' || a.status === 'escalated');
   const acknowledgedAlerts = alerts.filter(a => a.status === 'acknowledged' || a.status === 'resolved');
@@ -75,6 +93,24 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
           </button>
         </div>
       </div>
+
+      {assignedNotice && (
+        <div style={{
+          backgroundColor: 'rgba(34, 197, 94, 0.12)',
+          border: '1px solid var(--cat-success)',
+          color: 'var(--cat-success)',
+          padding: '0.65rem 1rem',
+          borderRadius: '8px',
+          fontSize: '0.85rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          marginBottom: '1rem'
+        }}>
+          <CheckCircle size={16} />
+          <span>{assignedNotice}</span>
+        </div>
+      )}
 
       {alerts.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--theme-text-muted)', fontSize: '0.9rem' }}>
@@ -131,7 +167,23 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
                         </div>
                       </div>
 
-                      <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => handleAssignTraining(a.alert_id, a.operator_id)}
+                          className="cat-btn cat-btn-outline"
+                          style={{
+                            padding: '0.25rem 0.6rem',
+                            fontSize: '0.72rem',
+                            minHeight: '28px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem'
+                          }}
+                        >
+                          <GraduationCap size={13} color="var(--cat-yellow)" />
+                          <span>Assign Remedial Simulator</span>
+                        </button>
+
                         {isEscalated ? (
                           <span className="cat-badge badge-danger">
                             <BellRing size={13} /> ESCALATED TO SUPERVISOR

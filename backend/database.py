@@ -151,6 +151,148 @@ def init_db():
     );
     """)
 
+    # 10. Geofence Zones Table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS geofence_zones (
+        zone_id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        center_lat REAL NOT NULL,
+        center_lon REAL NOT NULL,
+        radius_m REAL NOT NULL,
+        zone_type TEXT NOT NULL CHECK(zone_type IN ('safe_work_zone', 'blast_danger_zone', 'speed_restricted', 'haul_road')),
+        max_speed_kmh REAL NOT NULL DEFAULT 25.0
+    );
+    """)
+
+    # 11. Machine GPS Historical Breadcrumb Traces Table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS machine_gps_traces (
+        trace_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        machine_id TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        speed_kmh REAL NOT NULL DEFAULT 0.0,
+        heading_deg REAL NOT NULL DEFAULT 0.0,
+        is_anomaly INTEGER NOT NULL DEFAULT 0,
+        anomaly_reason TEXT,
+        FOREIGN KEY (machine_id) REFERENCES machines (machine_id)
+    );
+    """)
+
+    # --- Safe Migrations for Existing Tables ---
+    # Add GPS columns to machines if not present
+    machine_cols = [c[1] for c in cursor.execute("PRAGMA table_info(machines);").fetchall()]
+    if "latitude" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN latitude REAL DEFAULT 40.7128;")
+    if "longitude" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN longitude REAL DEFAULT -74.0060;")
+    if "current_zone" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN current_zone TEXT DEFAULT 'Zone A - Quarry North';")
+    if "authorized_zone" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN authorized_zone TEXT DEFAULT 'Zone A - Quarry North';")
+    if "speed_kmh" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN speed_kmh REAL DEFAULT 0.0;")
+    if "heading_deg" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN heading_deg REAL DEFAULT 0.0;")
+    if "is_geofence_breached" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN is_geofence_breached INTEGER DEFAULT 0;")
+    if "last_gps_update" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN last_gps_update TEXT;")
+
+    # Add Weather Re-Approval columns to tasks if not present
+    task_cols = [c[1] for c in cursor.execute("PRAGMA table_info(tasks);").fetchall()]
+    if "weather_reapproval_required" not in task_cols:
+        cursor.execute("ALTER TABLE tasks ADD COLUMN weather_reapproval_required INTEGER DEFAULT 0;")
+    if "weather_approved_by" not in task_cols:
+        cursor.execute("ALTER TABLE tasks ADD COLUMN weather_approved_by TEXT;")
+
+    # Seed Default Geofence Zones if empty
+    cursor.execute("SELECT COUNT(*) FROM geofence_zones;")
+    if cursor.fetchone()[0] == 0:
+        zones = [
+            ('ZONE_A', 'Zone A - Quarry North', 40.7135, -74.0055, 350.0, 'safe_work_zone', 25.0),
+            ('ZONE_B', 'Zone B - Utility Pipeline', 40.7110, -74.0080, 400.0, 'safe_work_zone', 20.0),
+            ('ZONE_C', 'Zone C - Stockpile Hub', 40.7160, -74.0030, 300.0, 'safe_work_zone', 15.0),
+            ('ZONE_D', 'Zone D - Old Silo / Demo', 40.7090, -74.0040, 250.0, 'safe_work_zone', 20.0),
+            ('ZONE_BLAST', 'Blast Danger Perimeter (Restricted)', 40.7180, -74.0090, 220.0, 'blast_danger_zone', 0.0),
+        ]
+        cursor.executemany("""
+        INSERT INTO geofence_zones (zone_id, name, center_lat, center_lon, radius_m, zone_type, max_speed_kmh)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
+        """, zones)
+
+    # Seed initial GPS positions for machines
+    cursor.execute("""
+    UPDATE machines SET
+        latitude = 40.7132, longitude = -74.0058, current_zone = 'Zone A - Quarry North',
+        authorized_zone = 'Zone A - Quarry North', speed_kmh = 4.5, heading_deg = 45.0,
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:30:00Z'
+    WHERE machine_id = 'EXC001';
+    """)
+
+    # EXC002 is flagged as weird/anomalous: breached boundary into Blast Danger Zone!
+    cursor.execute("""
+    UPDATE machines SET
+        latitude = 40.7182, longitude = -74.0088, current_zone = 'Blast Danger Perimeter (Restricted)',
+        authorized_zone = 'Zone B - Utility Pipeline', speed_kmh = 8.1, heading_deg = 320.0,
+        is_geofence_breached = 1, last_gps_update = '2026-09-23T16:31:00Z'
+    WHERE machine_id = 'EXC002';
+    """)
+
+    cursor.execute("""
+    UPDATE machines SET
+        latitude = 40.7158, longitude = -74.0032, current_zone = 'Zone C - Stockpile Hub',
+        authorized_zone = 'Zone C - Stockpile Hub', speed_kmh = 12.0, heading_deg = 90.0,
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:29:00Z'
+    WHERE machine_id = 'LDR001';
+    """)
+
+    cursor.execute("""
+    UPDATE machines SET
+        latitude = 40.7139, longitude = -74.0062, current_zone = 'Zone A - Quarry North',
+        authorized_zone = 'Zone A - Quarry North', speed_kmh = 0.0, heading_deg = 0.0,
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:28:00Z'
+    WHERE machine_id = 'BLD001';
+    """)
+
+    cursor.execute("""
+    UPDATE machines SET
+        latitude = 40.7092, longitude = -74.0042, current_zone = 'Zone D - Old Silo / Demo',
+        authorized_zone = 'Zone D - Old Silo / Demo', speed_kmh = 0.0, heading_deg = 180.0,
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:25:00Z'
+    WHERE machine_id = 'BLD002';
+    """)
+
+    # Seed traces for EXC002 showing route towards danger perimeter
+    cursor.execute("SELECT COUNT(*) FROM machine_gps_traces WHERE machine_id = 'EXC002';")
+    if cursor.fetchone()[0] == 0:
+        traces = [
+            ('EXC002', '2026-09-23T16:15:00Z', 40.7112, -74.0080, 5.0, 350.0, 0, None),
+            ('EXC002', '2026-09-23T16:20:00Z', 40.7130, -74.0082, 7.2, 345.0, 0, None),
+            ('EXC002', '2026-09-23T16:25:00Z', 40.7155, -74.0085, 8.5, 335.0, 1, 'Exited Authorized Zone B - Utility Pipeline'),
+            ('EXC002', '2026-09-23T16:30:00Z', 40.7175, -74.0087, 8.0, 325.0, 1, 'Approaching High-Risk Blast Danger Perimeter'),
+            ('EXC002', '2026-09-23T16:31:00Z', 40.7182, -74.0088, 8.1, 320.0, 1, 'CRITICAL: Entered Blast Danger Perimeter (Restricted Zone)')
+        ]
+        cursor.executemany("""
+        INSERT INTO machine_gps_traces (machine_id, timestamp, latitude, longitude, speed_kmh, heading_deg, is_anomaly, anomaly_reason)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        """, traces)
+
+    # Seed normal traces for EXC001 within Zone A
+    cursor.execute("SELECT COUNT(*) FROM machine_gps_traces WHERE machine_id = 'EXC001';")
+    if cursor.fetchone()[0] == 0:
+        traces_exc1 = [
+            ('EXC001', '2026-09-23T16:15:00Z', 40.7130, -74.0065, 3.2, 50.0, 0, None),
+            ('EXC001', '2026-09-23T16:20:00Z', 40.7131, -74.0062, 4.0, 45.0, 0, None),
+            ('EXC001', '2026-09-23T16:25:00Z', 40.7132, -74.0060, 3.8, 48.0, 0, None),
+            ('EXC001', '2026-09-23T16:30:00Z', 40.7132, -74.0058, 4.5, 45.0, 0, None)
+        ]
+        cursor.executemany("""
+        INSERT INTO machine_gps_traces (machine_id, timestamp, latitude, longitude, speed_kmh, heading_deg, is_anomaly, anomaly_reason)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        """, traces_exc1)
+
     conn.commit()
     conn.close()
 

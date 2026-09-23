@@ -19,6 +19,8 @@ export interface TaskItem {
   estimated_time_min?: number;
   predicted_time_min?: number;
   actual_time_min?: number;
+  weather_reapproval_required?: boolean;
+  weather_approved_by?: string;
 }
 
 interface TodayTasksViewProps {
@@ -192,6 +194,30 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Weather Re-Approval Gate Banner */}
+                {task.weather_reapproval_required && (
+                  <div style={{
+                    backgroundColor: 'rgba(234, 179, 8, 0.12)',
+                    border: '1px solid var(--cat-warning)',
+                    borderRadius: '6px',
+                    padding: '0.6rem 0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                    fontSize: '0.8rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--cat-warning)', fontWeight: 700 }}>
+                      <AlertTriangle size={15} />
+                      <span>WEATHER RE-APPROVAL GATE: High Wind / Rain Hazard</span>
+                    </div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--theme-text-muted)' }}>
+                      {task.weather_approved_by ? `Authorized by ${task.weather_approved_by}` : 'Pending Supervisor Clearance'}
+                    </span>
+                  </div>
+                )}
 
                 {/* Dispatch Notes */}
                 {task.notes && (

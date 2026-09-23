@@ -51,10 +51,53 @@ class MachineBase(BaseModel):
     fuel_tank_capacity_l: Optional[float] = None
     rental_counterparty: Optional[str] = None
     rental_start: Optional[str] = None
+    rental_counterparty: Optional[str] = None
+    rental_start: Optional[str] = None
     rental_end: Optional[str] = None
+    latitude: Optional[float] = 40.7128
+    longitude: Optional[float] = -74.0060
+    current_zone: Optional[str] = "Zone A - Quarry North"
+    authorized_zone: Optional[str] = "Zone A - Quarry North"
+    speed_kmh: Optional[float] = 0.0
+    heading_deg: Optional[float] = 0.0
+    is_geofence_breached: Optional[bool] = False
+    last_gps_update: Optional[str] = None
 
 class MachineResponse(MachineBase):
     current_operator_name: Optional[str] = None
+
+class GpsTracePoint(BaseModel):
+    trace_id: Optional[int] = None
+    machine_id: str
+    timestamp: str
+    latitude: float
+    longitude: float
+    speed_kmh: float = 0.0
+    heading_deg: float = 0.0
+    is_anomaly: bool = False
+    anomaly_reason: Optional[str] = None
+
+class GeofenceZoneResponse(BaseModel):
+    zone_id: str
+    name: str
+    center_lat: float
+    center_lon: float
+    radius_m: float
+    zone_type: Literal["safe_work_zone", "blast_danger_zone", "speed_restricted", "haul_road"]
+    max_speed_kmh: float
+
+class GpsAnomalyReport(BaseModel):
+    machine_id: str
+    machine_model: str
+    operator_name: Optional[str] = None
+    current_zone: str
+    authorized_zone: str
+    anomaly_type: str
+    anomaly_description: str
+    latitude: float
+    longitude: float
+    timestamp: str
+    severity: Literal["low", "medium", "high", "critical"]
 
 class RentalUpdateRequest(BaseModel):
     custody_status: Literal["owned", "rented_in", "rented_out"]
@@ -66,7 +109,7 @@ class RentalUpdateRequest(BaseModel):
 class TaskBase(BaseModel):
     task_id: str
     task_type: str
-    weather: str
+    weather: Optional[str] = "Sunny"
     operator_id: str
     machine_id: str
     scheduled_start: str # UTC ISO format
@@ -74,17 +117,19 @@ class TaskBase(BaseModel):
     status: Literal["upcoming", "in-progress", "done", "delayed"] = "upcoming"
     location_zone: str
     notes: Optional[str] = None
+    weather_reapproval_required: Optional[bool] = False
+    weather_approved_by: Optional[str] = None
 
 class TaskCreate(BaseModel):
     task_type: str
-    weather: str
+    weather: Optional[str] = None # Auto-resolved from location if not provided
     operator_id: str
     machine_id: str
-    scheduled_start: str # Local or UTC ISO, will be normalized to UTC
+    scheduled_start: str # Local or UTC ISO, normalized to UTC
     scheduled_end: str
     location_zone: str
     notes: Optional[str] = None
-    estimated_time_min: Optional[float] = None
+    estimated_time_min: Optional[float] = None # Calculated automatically by ML if not provided
 
 class TaskResponse(TaskBase):
     operator_name: Optional[str] = None
@@ -92,6 +137,11 @@ class TaskResponse(TaskBase):
     estimated_time_min: Optional[float] = None
     predicted_time_min: Optional[float] = None
     actual_time_min: Optional[float] = None
+
+class WeatherApprovalRequest(BaseModel):
+    supervisor_id: str = "SUP001"
+    action: Literal["approve", "postpone"] = "approve"
+    notes: Optional[str] = None
 
 class TaskStatusUpdate(BaseModel):
     status: Literal["upcoming", "in-progress", "done", "delayed"]
@@ -193,5 +243,6 @@ class FactorImpact(BaseModel):
 class TaskTimePredictResponse(BaseModel):
     predicted_time_min: float
     estimated_time_min: float
+    explanation: Optional[str] = None
     top_factors: List[FactorImpact]
     engineered_features: Optional[dict] = None

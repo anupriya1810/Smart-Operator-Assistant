@@ -14,12 +14,14 @@ from models import (
     SafetyAlertCreate, SafetyAlertResponse, AlertAcknowledgeRequest,
     IncidentCreate, IncidentResponse,
     VoiceCommandRequest, VoiceCommandResponse,
-    TaskTimePredictRequest, TaskTimePredictResponse
+    TaskTimePredictRequest, TaskTimePredictResponse,
+    GpsTracePoint, GeofenceZoneResponse, GpsAnomalyReport, WeatherApprovalRequest
 )
 from services.notification_service import notification_service
 from services.prediction_engine import prediction_engine
 from services.anomaly_detector import anomaly_detector
 from services.ml_prediction_service import predict_task_duration
+from services.weather_terrain_service import fetch_weather, fetch_terrain
 from training_data import SCENARIOS, OPERATOR_PROGRESS
 
 # Ensure database tables exist
@@ -196,6 +198,30 @@ async def create_task(task_in: TaskCreate):
     elif "Phoenix" in task_in.location_zone or "Desert" in task_in.location_zone:
         lat, lon, site_id = 33.4484, -112.0740, "SITE_PHX"
 
+    # Automatically fetch live site weather based on location if not provided
+    weather_info = fetch_weather(lat, lon, task_in.scheduled_start)
+    if not task_in.weather:
+        if weather_info["precipitation_mm"] > 1.0:
+            resolved_weather = "Rainy"
+        elif weather_info["wind_speed_kmh"] > 24.0:
+            resolved_weather = "Windy"
+        elif weather_info["temperature_c"] > 28.0:
+            resolved_weather = "Sunny"
+        else:
+            resolved_weather = "Cloudy"
+    else:
+        resolved_weather = task_in.weather
+
+    # Automatic Baseline duration calculation if not provided by supervisor
+    type_defaults = {
+        "Material Loading": 30.0,
+        "Trenching": 48.0,
+        "Demolition": 85.0,
+        "Earth Excavation": 55.0,
+        "Grading": 38.0
+    }
+    baseline_est = task_in.estimated_time_min or type_defaults.get(task_in.task_type, 45.0)
+
     # Run XGBoost ML prediction model with live weather & terrain
     pred_result = predict_task_duration(
         task_type=task_in.task_type,
@@ -204,15 +230,32 @@ async def create_task(task_in: TaskCreate):
         latitude=lat,
         longitude=lon,
         scheduled_start=task_in.scheduled_start,
-        estimated_time_min=task_in.estimated_time_min
+        estimated_time_min=baseline_est
     )
+
+    # Check Weather Re-Approval Gate:
+    # Severe winds (>28 km/h) or heavy rain (>12mm) triggers mandatory supervisor re-approval
+    is_severe_weather = weather_info["wind_speed_kmh"] > 28.0 or weather_info["precipitation_mm"] > 12.0 or resolved_weather.lower() == "windy"
+    initial_status = "delayed" if is_severe_weather else "upcoming"
+    weather_reapproval = 1 if is_severe_weather else 0
+    auto_notes = task_in.notes or ""
+    if is_severe_weather:
+        weather_notice = f"[WEATHER RE-APPROVAL REQUIRED: Wind {weather_info['wind_speed_kmh']}km/h, Precip {weather_info['precipitation_mm']}mm]"
+        auto_notes = f"{weather_notice} {auto_notes}".strip()
 
     cursor = conn.cursor()
     cursor.execute("""
-    INSERT INTO tasks (task_id, task_type, weather, operator_id, machine_id, scheduled_start, scheduled_end, status, location_zone, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'upcoming', ?, ?);
-    """, (new_task_id, task_in.task_type, task_in.weather, task_in.operator_id, task_in.machine_id,
-          task_in.scheduled_start, task_in.scheduled_end, task_in.location_zone, task_in.notes))
+    INSERT INTO tasks (
+        task_id, task_type, weather, operator_id, machine_id,
+        scheduled_start, scheduled_end, status, location_zone, notes,
+        weather_reapproval_required, weather_approved_by
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    """, (
+        new_task_id, task_in.task_type, resolved_weather, task_in.operator_id, task_in.machine_id,
+        task_in.scheduled_start, task_in.scheduled_end, initial_status, task_in.location_zone, auto_notes,
+        weather_reapproval, None
+    ))
 
     cursor.execute("""
     INSERT INTO task_time_predictions (task_id, estimated_time_min, predicted_time_min)
@@ -229,7 +272,7 @@ async def create_task(task_in: TaskCreate):
             latitude, longitude, site_id, scheduled_date
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """, (
-            new_task_id, task_in.task_type, task_in.weather, task_in.operator_id, task_in.machine_id,
+            new_task_id, task_in.task_type, resolved_weather, task_in.operator_id, task_in.machine_id,
             op["skill_level"], mach_age, int(pred_result["estimated_time_min"]),
             int(pred_result["predicted_time_min"]), lat, lon, site_id, task_in.scheduled_start
         ))
@@ -255,8 +298,53 @@ async def create_task(task_in: TaskCreate):
     await notification_service.notify(
         channels=["websocket", "log"],
         target=task_in.operator_id,
-        message=f"New Task Scheduled: {task_in.task_type} at {task_in.location_zone}",
-        payload={"task_id": new_task_id, "predicted_duration": pred_result["predicted_time_min"]}
+        message=f"New Task Scheduled: {task_in.task_type} at {task_in.location_zone} (Weather: {resolved_weather})",
+        payload={
+            "task_id": new_task_id,
+            "predicted_duration": pred_result["predicted_time_min"],
+            "weather_reapproval_required": bool(weather_reapproval)
+        }
+    )
+
+    return dict(row)
+
+@app.post("/api/tasks/{task_id}/weather-approval", response_model=TaskResponse)
+async def approve_weather_for_task(task_id: str, req: WeatherApprovalRequest):
+    conn = get_db_connection()
+    task = conn.execute("SELECT * FROM tasks WHERE task_id = ?;", (task_id,)).fetchone()
+    if not task:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    new_status = "upcoming" if req.action == "approve" else "delayed"
+    reapproval = 0 if req.action == "approve" else 1
+    note_append = f" | [WEATHER AUTHORIZED by {req.supervisor_id}: {req.notes or 'Proceed with standard PPE'}]" if req.action == "approve" else f" | [WEATHER POSTPONED by {req.supervisor_id}: {req.notes or 'High wind hazard'}]"
+    updated_notes = (task["notes"] or "") + note_append
+
+    conn.execute("""
+    UPDATE tasks
+    SET status = ?, weather_reapproval_required = ?, weather_approved_by = ?, notes = ?
+    WHERE task_id = ?;
+    """, (new_status, reapproval, req.supervisor_id if req.action == "approve" else None, updated_notes, task_id))
+    conn.commit()
+
+    query = """
+    SELECT t.*, o.name as operator_name, m.model as machine_model,
+           ttp.estimated_time_min, ttp.predicted_time_min, ttp.actual_time_min
+    FROM tasks t
+    LEFT JOIN operators o ON t.operator_id = o.operator_id
+    LEFT JOIN machines m ON t.machine_id = m.machine_id
+    LEFT JOIN task_time_predictions ttp ON t.task_id = ttp.task_id
+    WHERE t.task_id = ?;
+    """
+    row = conn.execute(query, (task_id,)).fetchone()
+    conn.close()
+
+    await notification_service.notify(
+        channels=["websocket", "log"],
+        target="all",
+        message=f"Task {task_id} weather gate updated: {req.action.upper()} by {req.supervisor_id}",
+        payload={"task_id": task_id, "status": new_status, "reapproval_required": bool(reapproval)}
     )
 
     return dict(row)
@@ -578,6 +666,131 @@ def predict_task_duration_compat(payload: Dict[str, Any]):
         scheduled_start=payload.get("scheduled_start", datetime.now(timezone.utc).isoformat()),
         estimated_time_min=float(payload.get("estimated_time_min", 45.0))
     )
+
+# --- Fleet GPS, Geofencing, & Real-Time Tracking ---
+@app.get("/api/fleet/geofences", response_model=List[GeofenceZoneResponse])
+def get_geofences():
+    """Retrieve all defined worksite geofences, safety buffers, and restricted danger zones."""
+    conn = get_db_connection()
+    rows = conn.execute("SELECT * FROM geofence_zones;").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+@app.get("/api/fleet/gps/traces", response_model=List[GpsTracePoint])
+def get_gps_traces(machine_id: Optional[str] = None):
+    """Retrieve breadcrumb trace points showing historical movement path of heavy equipment."""
+    conn = get_db_connection()
+    if machine_id:
+        rows = conn.execute("SELECT * FROM machine_gps_traces WHERE machine_id = ? ORDER BY timestamp ASC;", (machine_id,)).fetchall()
+    else:
+        rows = conn.execute("SELECT * FROM machine_gps_traces ORDER BY timestamp ASC;").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+@app.get("/api/fleet/gps/anomalies", response_model=List[GpsAnomalyReport])
+def get_gps_anomalies():
+    """
+    Evaluates current positions & traces to highlight anomalous events to the supervisor:
+    1. Geofence Breaches (machine outside its authorized working boundary).
+    2. Intrusion into Blast Danger Perimeters.
+    3. Route displacements during unauthorized hours.
+    """
+    conn = get_db_connection()
+    query = """
+    SELECT m.*, o.name as operator_name
+    FROM machines m
+    LEFT JOIN operator_machine_assignments oma ON m.machine_id = oma.machine_id AND oma.is_active = 1
+    LEFT JOIN operators o ON oma.operator_id = o.operator_id;
+    """
+    machines = conn.execute(query).fetchall()
+    traces = conn.execute("SELECT * FROM machine_gps_traces WHERE is_anomaly = 1 ORDER BY timestamp DESC;").fetchall()
+    conn.close()
+
+    anomalies = []
+    for m in machines:
+        if m["is_geofence_breached"] or "Blast" in (m["current_zone"] or ""):
+            anomalies.append(GpsAnomalyReport(
+                machine_id=m["machine_id"],
+                machine_model=m["model"],
+                operator_name=m["operator_name"],
+                current_zone=m["current_zone"] or "Unknown",
+                authorized_zone=m["authorized_zone"] or "Zone A - Quarry North",
+                anomaly_type="Geofence Boundary Breach & Danger Zone Intrusion",
+                anomaly_description=f"{m['model']} ({m['machine_id']}) moved into restricted '{m['current_zone']}' without supervisor clearance! Authorized work zone was '{m['authorized_zone']}'.",
+                latitude=m["latitude"] or 40.7182,
+                longitude=m["longitude"] or -74.0088,
+                timestamp=m["last_gps_update"] or datetime.now(timezone.utc).isoformat(),
+                severity="critical"
+            ))
+
+    for t in traces:
+        anomalies.append(GpsAnomalyReport(
+            machine_id=t["machine_id"],
+            machine_model=t["machine_id"],
+            operator_name=None,
+            current_zone="Restricted Route",
+            authorized_zone="Assigned Worksite",
+            anomaly_type="Unexpected Path Displacement",
+            anomaly_description=t["anomaly_reason"] or "Route displacement detected outside normal operating boundaries",
+            latitude=t["latitude"],
+            longitude=t["longitude"],
+            timestamp=t["timestamp"],
+            severity="high"
+        ))
+
+    return anomalies
+
+@app.get("/api/weather/site")
+def get_site_weather(latitude: float = 40.7128, longitude: float = -74.0060, scheduled_time: Optional[str] = None):
+    """Real-time weather endpoint for the scheduler and HUD so users don't have to input weather manually."""
+    weather_info = fetch_weather(latitude, longitude, scheduled_time)
+    
+    # Interpret condition label for convenience
+    p = weather_info.get("precipitation_mm", 0.0)
+    w = weather_info.get("wind_speed_kmh", 0.0)
+    t = weather_info.get("temperature_c", 20.0)
+
+    if p > 1.0:
+        condition = "Rainy"
+    elif w > 24.0:
+        condition = "Windy"
+    elif t > 28.0:
+        condition = "Sunny"
+    else:
+        condition = "Cloudy"
+
+    is_severe = w > 28.0 or p > 12.0
+    return {
+        **weather_info,
+        "condition": condition,
+        "is_severe": is_severe,
+        "reapproval_required": is_severe
+    }
+
+@app.post("/api/alerts/{alert_id}/assign-training")
+async def assign_remedial_training(alert_id: str, payload: Dict[str, Any]):
+    """Assigns an in-cab remedial simulator scenario directly from a logged safety alert or incident."""
+    conn = get_db_connection()
+    alert = conn.execute("SELECT * FROM safety_alerts WHERE alert_id = ?;", (alert_id,)).fetchone()
+    if not alert:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Alert not found")
+
+    scenario_id = payload.get("scenario_id", "SCEN-SAFE-01")
+    op_id = alert["operator_id"]
+    
+    prog = OPERATOR_PROGRESS.setdefault(op_id, {"points": 0, "badges": [], "completed_scenarios": []})
+    prog["assigned_remedial_scenario"] = scenario_id
+    conn.close()
+
+    await notification_service.notify(
+        channels=["websocket", "log"],
+        target=op_id,
+        message=f"Supervisor assigned remedial safety training module ({scenario_id}) for incident on {alert['machine_id']}.",
+        payload={"alert_id": alert_id, "scenario_id": scenario_id}
+    )
+
+    return {"status": "assigned", "operator_id": op_id, "scenario_id": scenario_id}
 
 # --- Training Hub Scenarios & Simulation (Section 4) ---
 @app.get("/api/training/scenarios")
