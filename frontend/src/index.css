@@ -1,49 +1,149 @@
+/* ========================================================================= */
+/* CAT Co-Pilot Industrial Design System Tokens & Base Styles                */
+/* ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
 :root {
+  /* Brand Primary */
   --cat-yellow: #FFCD11;
   --cat-yellow-hover: #F0BC00;
   --cat-yellow-dark: #B48300;
-  --cat-yellow-subtle: #FFFBEB;
-  --cat-yellow-border: #FDE68A;
-  --cat-black: #18181B;
-  --cat-gray-900: #0F172A;
-  --cat-gray-800: #1E293B;
-  --cat-gray-700: #334155;
-  --cat-gray-600: #475569;
-  --cat-gray-500: #64748B;
-  --cat-gray-400: #94A3B8;
-  --cat-gray-300: #CBD5E1;
-  --cat-gray-200: #E2E8F0;
-  --cat-gray-100: #F1F5F9;
-  --cat-gray-50: #F8FAFC;
-  --cat-white: #FFFFFF;
-  --cat-card-bg: #FFFFFF;
-  --cat-border: #E2E8F0;
-  --cat-border-hover: #CBD5E1;
-  --cat-text: #0F172A;
-  --cat-text-muted: #64748B;
-  --cat-hazard-red: #DC2626;
-  --cat-hazard-amber: #D97706;
-  --cat-hazard-green: #059669;
-  --cat-hazard-blue: #2563EB;
-  --cat-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --cat-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --cat-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --cat-yellow-glow: rgba(255, 205, 17, 0.4);
+  --cat-yellow-subtle: rgba(255, 205, 17, 0.12);
+
+  /* Neutrals & Dark Hud Bases */
+  --cat-black: #111111;
+  --cat-black-pure: #09090B;
+  --cat-dark-surface: #18181B;
+  --cat-dark-card: #1F1F23;
+  --cat-dark-card-hover: #27272A;
+  --cat-dark-border: #2E2E33;
+  --cat-dark-border-subtle: #232328;
+  --cat-dark-divider: #27272A;
+
+  /* Office / Supervisor Palette */
+  --cat-office-bg: #F4F6F9;
+  --cat-office-card: #FFFFFF;
+  --cat-office-border: #E2E8F0;
+  --cat-office-border-hover: #CBD5E1;
+  --cat-office-divider: #F1F5F9;
+  --cat-office-subtle: #F8FAFC;
+
+  /* Semantic State Colors */
+  --cat-danger: #EF4444;
+  --cat-danger-hover: #DC2626;
+  --cat-danger-glow: rgba(239, 68, 68, 0.35);
+  --cat-danger-bg-dark: rgba(239, 68, 68, 0.16);
+  --cat-danger-bg-light: #FEF2F2;
+  --cat-danger-border-dark: #7F1D1D;
+  --cat-danger-border-light: #FECACA;
+
+  --cat-warning: #F59E0B;
+  --cat-warning-hover: #D97706;
+  --cat-warning-bg-dark: rgba(245, 158, 11, 0.16);
+  --cat-warning-bg-light: #FFFBEB;
+  --cat-warning-border-dark: #78350F;
+  --cat-warning-border-light: #FDE68A;
+
+  --cat-success: #10B981;
+  --cat-success-hover: #059669;
+  --cat-success-bg-dark: rgba(16, 185, 129, 0.16);
+  --cat-success-bg-light: #ECFDF5;
+  --cat-success-border-dark: #064E3B;
+  --cat-success-border-light: #A7F3D0;
+
+  --cat-neutral-badge-bg-dark: #27272A;
+  --cat-neutral-badge-border-dark: #3F3F46;
+  --cat-neutral-badge-text-dark: #E4E4E7;
+
+  --cat-neutral-badge-bg-light: #F1F5F9;
+  --cat-neutral-badge-border-light: #CBD5E1;
+  --cat-neutral-badge-text-light: #334155;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Transitions */
+  --cat-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --cat-transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ========================================================================= */
+/* THEME MODE: OPERATOR IN-CAB HUD (Full Dark Industrial Treatment)          */
+/* ========================================================================= */
+.cat-theme-operator {
+  --theme-bg: #0D0D0E;
+  --theme-card-bg: #18181B;
+  --theme-card-bg-elevated: #202024;
+  --theme-card-border: #2A2A2E;
+  --theme-card-border-hover: #3A3A40;
+  --theme-divider: #26262A;
+  --theme-text-primary: #F8FAFC;
+  --theme-text-secondary: #94A3B8;
+  --theme-text-muted: #64748B;
+  --theme-subtle-bg: #131316;
+  --theme-subtle-border: #222226;
+  --theme-input-bg: #121214;
+  --theme-input-border: #2E2E33;
+  --theme-kpi-bg: #1B1B1F;
+  --theme-kpi-border: #2C2C32;
+  --theme-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --theme-banner-bg: #141416;
+  --theme-banner-border: #26262B;
+}
+
+/* ========================================================================= */
+/* THEME MODE: SUPERVISOR OFFICE (Executive Desk Command Center)             */
+/* ========================================================================= */
+.cat-theme-supervisor {
+  --theme-bg: #F4F6F9;
+  --theme-card-bg: #FFFFFF;
+  --theme-card-bg-elevated: #F8FAFC;
+  --theme-card-border: #E2E8F0;
+  --theme-card-border-hover: #CBD5E1;
+  --theme-divider: #E2E8F0;
+  --theme-text-primary: #0F172A;
+  --theme-text-secondary: #475569;
+  --theme-text-muted: #94A3B8;
+  --theme-subtle-bg: #F8FAFC;
+  --theme-subtle-border: #E2E8F0;
+  --theme-input-bg: #FFFFFF;
+  --theme-input-border: #CBD5E1;
+  --theme-kpi-bg: #FFFFFF;
+  --theme-kpi-border: #E2E8F0;
+  --theme-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --theme-banner-bg: #FFFFFF;
+  --theme-banner-border: #E2E8F0;
+}
+
+/* ========================================================================= */
+/* Global Reset & Typography Baseline                                       */
+/* ========================================================================= */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background-color: var(--cat-gray-50);
-  color: var(--cat-text);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mono-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Scrollbar Styling */
@@ -52,190 +152,326 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--cat-gray-100);
+  background: rgba(0, 0, 0, 0.1);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--cat-gray-300);
+  background: #3F3F46;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--cat-gray-400);
+  background: #52525B;
 }
 
-/* Professional Industrial Action Buttons */
-.cat-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  padding: 0.65rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.925rem;
-  cursor: pointer;
-  transition: all 0.15s ease-in-out;
-  border: 1px solid transparent;
-  text-decoration: none;
-}
-
-.cat-btn:active {
-  transform: translateY(1px);
-}
-
-.cat-btn-primary {
-  background-color: var(--cat-yellow);
-  color: #18181B;
-  border-color: #E5B80F;
-  box-shadow: var(--cat-shadow-sm);
-  font-weight: 700;
-}
-.cat-btn-primary:hover {
-  background-color: var(--cat-yellow-hover);
-  box-shadow: 0 4px 10px rgba(255, 205, 17, 0.35);
-}
-
-.cat-btn-secondary {
-  background-color: #18181B;
-  color: #FFFFFF;
-  border-color: #27272A;
-  box-shadow: var(--cat-shadow-sm);
-}
-.cat-btn-secondary:hover {
-  background-color: #27272A;
-  box-shadow: var(--cat-shadow-md);
-}
-
-.cat-btn-outline {
-  background-color: #FFFFFF;
-  color: var(--cat-gray-800);
-  border-color: var(--cat-gray-300);
-  box-shadow: var(--cat-shadow-sm);
-}
-.cat-btn-outline:hover {
-  background-color: var(--cat-gray-50);
-  border-color: var(--cat-gray-400);
-}
-
-.cat-btn-danger {
-  background-color: var(--cat-hazard-red);
-  color: #FFFFFF;
-  border-color: #B91C1C;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
-}
-.cat-btn-danger:hover {
-  background-color: #B91C1C;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
-}
-
-/* Professional Industrial Card */
+/* ========================================================================= */
+/* Cards & Containers (Single Elevation Level, No Nested Border Clutter)     */
+/* ========================================================================= */
 .cat-card {
-  background-color: var(--cat-card-bg);
-  border: 1px solid var(--cat-border);
+  background-color: var(--theme-card-bg);
+  border: 1px solid var(--theme-card-border);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: var(--space-5);
   position: relative;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--theme-shadow);
+  transition: border-color var(--cat-transition-smooth), box-shadow var(--cat-transition-smooth), background-color var(--cat-transition-smooth);
 }
 
 .cat-card:hover {
-  border-color: var(--cat-border-hover);
+  border-color: var(--theme-card-border-hover);
 }
 
 .cat-card-accent {
   border-left: 4px solid var(--cat-yellow);
 }
 
-/* Refined Pill Badges */
+.cat-card-danger {
+  border-left: 4px solid var(--cat-danger);
+}
+
+/* Metadata Row (Clean spacing and subtle dividers instead of nested boxes) */
+.cat-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--theme-divider);
+  border-bottom: 1px solid var(--theme-divider);
+  margin: var(--space-3) 0;
+}
+
+.cat-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 140px;
+}
+
+.cat-meta-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--theme-text-muted);
+}
+
+.cat-meta-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* ========================================================================= */
+/* Buttons: High Contrast Tactile In-Cab Controls                            */
+/* ========================================================================= */
+.cat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.7rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--cat-transition-fast);
+  border: 1px solid transparent;
+  user-select: none;
+  text-decoration: none;
+}
+
+.cat-btn:active {
+  transform: scale(0.98);
+}
+
+.cat-btn-sm {
+  min-height: 36px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.cat-btn-primary {
+  background-color: var(--cat-yellow);
+  color: #111111;
+  border-color: #E5B80F;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.cat-btn-primary:hover {
+  background-color: var(--cat-yellow-hover);
+  box-shadow: 0 4px 12px var(--cat-yellow-glow);
+}
+
+.cat-theme-operator .cat-btn-secondary {
+  background-color: #242428;
+  color: #F8FAFC;
+  border-color: #38383E;
+}
+.cat-theme-operator .cat-btn-secondary:hover {
+  background-color: #2E2E34;
+  border-color: #484852;
+}
+
+.cat-theme-supervisor .cat-btn-secondary {
+  background-color: #1E293B;
+  color: #FFFFFF;
+  border-color: #334155;
+}
+.cat-theme-supervisor .cat-btn-secondary:hover {
+  background-color: #334155;
+}
+
+.cat-theme-operator .cat-btn-outline {
+  background-color: #1A1A1E;
+  color: #E2E8F0;
+  border-color: #323238;
+}
+.cat-theme-operator .cat-btn-outline:hover {
+  background-color: #24242A;
+  border-color: #44444E;
+}
+
+.cat-theme-supervisor .cat-btn-outline {
+  background-color: #FFFFFF;
+  color: #1E293B;
+  border-color: #CBD5E1;
+}
+.cat-theme-supervisor .cat-btn-outline:hover {
+  background-color: #F8FAFC;
+  border-color: #94A3B8;
+}
+
+.cat-btn-danger {
+  background-color: var(--cat-danger);
+  color: #FFFFFF;
+  border-color: #DC2626;
+  box-shadow: 0 2px 8px var(--cat-danger-glow);
+}
+.cat-btn-danger:hover {
+  background-color: var(--cat-danger-hover);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.5);
+}
+
+.cat-btn-success {
+  background-color: var(--cat-success);
+  color: #FFFFFF;
+  border-color: #059669;
+}
+.cat-btn-success:hover {
+  background-color: var(--cat-success-hover);
+}
+
+/* ========================================================================= */
+/* Semantic Badge System (Strictly Safe vs Danger vs Neutral)                */
+/* ========================================================================= */
 .cat-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.25rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
-.badge-yellow {
-  background: #FEF3C7;
-  color: #92400E;
-  border-color: #FDE68A;
+/* 1. Danger / Critical Hazard */
+.cat-theme-operator .badge-danger {
+  background: var(--cat-danger-bg-dark);
+  color: #FCA5A5;
+  border-color: var(--cat-danger-border-dark);
 }
-
-.badge-black {
-  background: #18181B;
-  color: var(--cat-yellow);
-  border-color: #27272A;
-}
-
-.badge-blue {
-  background: #EFF6FF;
-  color: #1E40AF;
-  border-color: #BFDBFE;
-}
-
-.badge-green {
-  background: #ECFDF5;
-  color: #065F46;
-  border-color: #A7F3D0;
-}
-
-.badge-purple {
-  background: #FAF5FF;
-  color: #6B21A8;
-  border-color: #E9D5FF;
-}
-
-.badge-red {
-  background: #FEF2F2;
+.cat-theme-supervisor .badge-danger {
+  background: var(--cat-danger-bg-light);
   color: #991B1B;
-  border-color: #FECACA;
+  border-color: var(--cat-danger-border-light);
 }
 
-/* Flashing Emergency Animation */
-@keyframes emergencyFlash {
+/* 2. Warning / In-Progress */
+.cat-theme-operator .badge-warning {
+  background: var(--cat-warning-bg-dark);
+  color: #FCD34D;
+  border-color: var(--cat-warning-border-dark);
+}
+.cat-theme-supervisor .badge-warning {
+  background: var(--cat-warning-bg-light);
+  color: #92400E;
+  border-color: var(--cat-warning-border-light);
+}
+
+/* 3. Success / Safe / Done / Acknowledged */
+.cat-theme-operator .badge-success {
+  background: var(--cat-success-bg-dark);
+  color: #6EE7B7;
+  border-color: var(--cat-success-border-dark);
+}
+.cat-theme-supervisor .badge-success {
+  background: var(--cat-success-bg-light);
+  color: #065F46;
+  border-color: var(--cat-success-border-light);
+}
+
+/* 4. Custody / Informational (Clean Slate/Zinc Neutral — never conflicts with safety) */
+.cat-theme-operator .badge-custody {
+  background: var(--cat-neutral-badge-bg-dark);
+  color: var(--cat-neutral-badge-text-dark);
+  border-color: var(--cat-neutral-badge-border-dark);
+}
+.cat-theme-supervisor .badge-custody {
+  background: var(--cat-neutral-badge-bg-light);
+  color: var(--cat-neutral-badge-text-light);
+  border-color: var(--cat-neutral-badge-border-light);
+}
+
+/* 5. In-Cab High-Contrast Callout Badge */
+.badge-cat-brand {
+  background: #111111;
+  color: var(--cat-yellow);
+  border-color: #333333;
+}
+
+/* ========================================================================= */
+/* Voice Assistant Listening Waveform & Animations                           */
+/* ========================================================================= */
+@keyframes waveAnimation {
   0%, 100% {
-    background-color: #FFFFFF;
-    border-color: #DC2626;
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.25);
+    height: 8px;
   }
   50% {
-    background-color: #FEF2F2;
-    border-color: #B91C1C;
-    box-shadow: 0 0 30px rgba(220, 38, 38, 0.45);
+    height: 24px;
   }
 }
 
-.cat-emergency-pulse {
-  animation: emergencyFlash 1.6s infinite ease-in-out;
+.voice-waveform {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 26px;
+  margin-left: 6px;
 }
 
-/* Pulse Glow for Microphone */
-@keyframes micPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 205, 17, 0.7);
+.voice-bar {
+  width: 3px;
+  background-color: #111111;
+  border-radius: 2px;
+  animation: waveAnimation 1s ease-in-out infinite;
+}
+.voice-bar:nth-child(1) { animation-delay: 0.1s; height: 10px; }
+.voice-bar:nth-child(2) { animation-delay: 0.25s; height: 18px; }
+.voice-bar:nth-child(3) { animation-delay: 0.4s; height: 24px; }
+.voice-bar:nth-child(4) { animation-delay: 0.2s; height: 16px; }
+.voice-bar:nth-child(5) { animation-delay: 0.35s; height: 12px; }
+
+/* Mic Active Pulse */
+@keyframes micListeningPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.cat-mic-listening {
+  animation: micListeningPulse 1.4s infinite !important;
+  background-color: var(--cat-danger) !important;
+  color: #FFFFFF !important;
+  border-color: #B91C1C !important;
+}
+
+/* Escalation Flash in Supervisor Panel */
+@keyframes alertEscalationFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.9);
+    border-color: var(--cat-danger);
   }
   50% {
-    box-shadow: 0 0 0 12px rgba(255, 205, 17, 0);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    border-color: #EF4444;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
   }
 }
 
-.cat-mic-active {
-  animation: micPulse 1.4s infinite;
-  background-color: var(--cat-yellow) !important;
-  color: #18181B !important;
-  border-color: #D97706 !important;
+.alert-pulse-loud {
+  animation: alertEscalationFlash 2s infinite ease-in-out;
 }
 
-/* Grid & Responsive Breakpoints */
+/* ========================================================================= */
+/* Responsive Layout Grid                                                    */
+/* ========================================================================= */
 .cat-grid-dashboard {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: var(--space-5);
 }
 
 @media (min-width: 960px) {
@@ -244,22 +480,19 @@ body {
   }
 }
 
-/* Professional Form Inputs */
-.cat-input {
-  width: 100%;
-  min-height: 44px;
-  background: #FFFFFF;
-  border: 1px solid var(--cat-gray-300);
-  border-radius: 8px;
-  color: var(--cat-gray-900);
-  padding: 0.65rem 0.85rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.15s ease-in-out;
+@media (max-width: 640px) {
+  .cat-btn {
+    width: 100%;
+  }
+  .cat-card {
+    padding: var(--space-4);
+  }
 }
 
-.cat-input:focus {
-  outline: none;
-  border-color: #EAB308;
-  box-shadow: 0 0 0 3px rgba(255, 205, 17, 0.3);
+/* Task Item Transitions */
+.task-item-card {
+  transition: transform var(--cat-transition-fast), border-color var(--cat-transition-fast), box-shadow var(--cat-transition-fast);
+}
+.task-item-card:hover {
+  transform: translateY(-1px);
 }

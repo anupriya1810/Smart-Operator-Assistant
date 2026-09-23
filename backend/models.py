@@ -17,10 +17,15 @@ class SupervisorResponse(SupervisorBase):
 class OperatorBase(BaseModel):
     operator_id: str
     name: str
-    preferred_language: Literal["en", "hi", "es"] = "en"
+    preferred_language: Optional[str] = "en"
     timezone: str = "UTC"
-    skill_level: Literal["Beginner", "Intermediate", "Expert"]
-    assigned_supervisor_id: str
+    skill_level: str = "Intermediate"
+    assigned_supervisor_id: Optional[str] = "SUP001"
+    years_experience: Optional[int] = 5
+    shift: Optional[str] = "Day"
+    license_type: Optional[str] = "Heavy Equipment"
+    training_completion_pct: Optional[float] = 80.0
+    safety_violations_ytd: Optional[int] = 0
 
 class OperatorResponse(OperatorBase):
     pass
@@ -32,11 +37,18 @@ class OperatorProfileUpdate(BaseModel):
 # --- Machine Models ---
 class MachineBase(BaseModel):
     machine_id: str
-    type: str
+    type: Optional[str] = None
+    machine_type: Optional[str] = None
     model: str
-    age_years: float
-    owner_supervisor_id: str
-    custody_status: Literal["owned", "rented_in", "rented_out"] = "owned"
+    age_years: Optional[float] = None
+    machine_age_yrs: Optional[float] = None
+    owner_supervisor_id: Optional[str] = "SUP001"
+    custody_status: Optional[str] = "owned"
+    status: Optional[str] = "Active"
+    purchase_date: Optional[str] = None
+    last_maintenance_date: Optional[str] = None
+    lifetime_engine_hours: Optional[float] = None
+    fuel_tank_capacity_l: Optional[float] = None
     rental_counterparty: Optional[str] = None
     rental_start: Optional[str] = None
     rental_end: Optional[str] = None
@@ -163,3 +175,23 @@ class VoiceCommandResponse(BaseModel):
     action: str
     spoken_feedback: str
     data: Optional[dict] = None
+
+# --- ML Prediction Models ---
+class TaskTimePredictRequest(BaseModel):
+    task_type: str
+    operator_id: str
+    machine_id: str
+    latitude: float
+    longitude: float
+    scheduled_start: str
+    estimated_time_min: Optional[float] = None
+
+class FactorImpact(BaseModel):
+    feature: str
+    impact_min: float
+
+class TaskTimePredictResponse(BaseModel):
+    predicted_time_min: float
+    estimated_time_min: float
+    top_factors: List[FactorImpact]
+    engineered_features: Optional[dict] = None

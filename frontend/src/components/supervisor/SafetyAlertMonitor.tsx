@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShieldAlert, CheckCircle, Clock, BellRing } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Clock, BellRing, ChevronDown, ChevronUp } from 'lucide-react';
 import { formatUtcToLocal } from '../../utils/timezone';
 
 export interface AlertItem {
@@ -30,106 +30,210 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
   onRefresh,
 }) => {
   const { t } = useTranslation();
+  const [showResolvedList, setShowResolvedList] = useState(true);
 
-  const activeCount = alerts.filter(a => a.status === 'active' || a.status === 'escalated').length;
+  const activeAlerts = alerts.filter(a => a.status === 'active' || a.status === 'escalated');
+  const acknowledgedAlerts = alerts.filter(a => a.status === 'acknowledged' || a.status === 'resolved');
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+      {/* Header with quick status summary */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.25rem',
+        borderBottom: '1px solid var(--theme-divider)',
+        paddingBottom: '0.75rem',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
         <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--theme-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--cat-danger-bg-dark)', color: 'var(--cat-danger)', padding: '0.35rem', borderRadius: '6px', display: 'inline-flex' }}>
               <ShieldAlert size={18} />
             </div>
             {t('safetyMonitor')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
-            Real-time telemetry &amp; in-cab SOS escalation log.
+          <p style={{ fontSize: '0.82rem', color: 'var(--theme-text-secondary)', marginTop: '2px' }}>
+            Live fleet safety telemetry &amp; 45-second SOS escalation triage.
           </p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {activeCount > 0 ? (
-            <span className="cat-badge badge-red" style={{ animation: 'emergencyFlash 1.5s infinite' }}>
-              ⚠ {activeCount} ACTION REQUIRED
+          {activeAlerts.length > 0 ? (
+            <span className="cat-badge badge-danger alert-pulse-loud">
+              <BellRing size={13} /> {activeAlerts.length} ACTION REQUIRED
             </span>
           ) : (
-            <span className="cat-badge badge-green">✓ ALL CABINS NOMINAL</span>
+            <span className="cat-badge badge-success">
+              <CheckCircle size={13} /> ALL CABINS NOMINAL
+            </span>
           )}
-          <button onClick={onRefresh} className="cat-btn cat-btn-outline" style={{ minHeight: '34px', padding: '0.2rem 0.65rem', fontSize: '0.78rem' }}>
+          <button onClick={onRefresh} className="cat-btn cat-btn-outline cat-btn-sm">
             {t('refresh')}
           </button>
         </div>
       </div>
 
       {alerts.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: '#64748B', fontSize: '0.9rem' }}>
-          No safety alerts logged.
+        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--theme-text-muted)', fontSize: '0.9rem' }}>
+          No safety alerts logged across active shifts.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {alerts.map(a => {
-            const isCritical = a.status === 'escalated' || a.status === 'active';
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* SECTION 1: HIGH-PRIORITY ACTIVE / ESCALATED ALERTS (Visually Loud) */}
+          {activeAlerts.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--cat-danger)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <BellRing size={14} /> Critical Attention Required ({activeAlerts.length})
+              </div>
 
-            return (
+              {activeAlerts.map(a => {
+                const isEscalated = a.status === 'escalated';
+
+                return (
+                  <div
+                    key={a.alert_id}
+                    className="alert-pulse-loud"
+                    style={{
+                      backgroundColor: 'var(--theme-card-bg-elevated)',
+                      borderRadius: '10px',
+                      border: '2px solid var(--cat-danger)',
+                      borderLeft: '6px solid var(--cat-danger)',
+                      padding: '1.25rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.65rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 800, color: 'var(--cat-danger)', fontSize: '1.1rem' }}>
+                            {a.alert_type}
+                          </span>
+                          <span style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            color: 'var(--cat-danger)',
+                            backgroundColor: 'var(--cat-danger-bg-dark)',
+                            border: '1px solid var(--cat-danger)',
+                            padding: '1px 7px',
+                            borderRadius: '4px'
+                          }}>
+                            {a.alert_id}
+                          </span>
+                        </div>
+
+                        <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-secondary)', marginTop: '4px' }}>
+                          Machine: <strong style={{ color: 'var(--theme-text-primary)' }}>{a.machine_id}</strong> &bull; Operator: <strong style={{ color: 'var(--theme-text-primary)' }}>{a.operator_name || a.operator_id}</strong>
+                        </div>
+                      </div>
+
+                      <div>
+                        {isEscalated ? (
+                          <span className="cat-badge badge-danger">
+                            <BellRing size={13} /> ESCALATED TO SUPERVISOR
+                          </span>
+                        ) : (
+                          <span className="cat-badge badge-warning">
+                            <Clock size={13} /> IN-CAB ACKNOWLEDGING (45s)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '0.8rem',
+                      color: 'var(--theme-text-secondary)',
+                      borderTop: '1px solid var(--theme-divider)',
+                      paddingTop: '0.5rem',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem'
+                    }}>
+                      <span>Triggered: <strong className="mono-num" style={{ color: 'var(--theme-text-primary)' }}>{formatUtcToLocal(a.triggered_at, supervisorTimezone)}</strong></span>
+                      {a.notes && <span style={{ color: 'var(--theme-text-muted)', fontStyle: 'italic' }}>"{a.notes}"</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* SECTION 2: ACKNOWLEDGED / RESOLVED ALERTS (Visually Compact & Receded) */}
+          {acknowledgedAlerts.length > 0 && (
+            <div style={{ marginTop: activeAlerts.length > 0 ? '0.5rem' : '0' }}>
               <div
-                key={a.alert_id}
+                onClick={() => setShowResolvedList(!showResolvedList)}
                 style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '8px',
-                  borderTop: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
-                  borderRight: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
-                  borderBottom: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
-                  borderLeft: isCritical ? '4px solid #DC2626' : '4px solid #10B981',
-                  boxShadow: isCritical ? '0 2px 8px rgba(220, 38, 38, 0.08)' : '0 1px 2px rgba(0, 0, 0, 0.03)',
-                  padding: '1rem',
                   display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.5rem'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  color: 'var(--theme-text-muted)',
+                  cursor: 'pointer',
+                  padding: '0.5rem 0',
+                  userSelect: 'none'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontWeight: 700, color: isCritical ? '#DC2626' : '#0F172A', fontSize: '1rem' }}>
-                        {a.alert_type}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#92400E', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '1px 6px', borderRadius: '4px' }}>
-                        {a.alert_id}
-                      </span>
-                    </div>
-
-                    <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '3px' }}>
-                      Machine: <strong style={{ color: '#0F172A' }}>{a.machine_id}</strong> &bull; Operator: <strong style={{ color: '#0F172A' }}>{a.operator_name || a.operator_id}</strong>
-                    </div>
-                  </div>
-
-                  <div>
-                    {a.status === 'escalated' && (
-                      <span className="cat-badge badge-red">
-                        <BellRing size={12} /> ESCALATED TO OFFICE
-                      </span>
-                    )}
-                    {a.status === 'active' && (
-                      <span className="cat-badge badge-yellow">
-                        <Clock size={12} /> IN-CAB ACKNOWLEDGING (45s)
-                      </span>
-                    )}
-                    {a.status === 'acknowledged' && (
-                      <span className="cat-badge badge-green">
-                        <CheckCircle size={12} /> ACKNOWLEDGED SAFE ({a.response_time_sec ? `${a.response_time_sec}s` : ''})
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#64748B', borderTop: '1px solid #F1F5F9', paddingTop: '0.45rem', marginTop: '0.2rem' }}>
-                  <span>Triggered: <strong style={{ color: '#334155' }}>{formatUtcToLocal(a.triggered_at, supervisorTimezone)}</strong></span>
-                  {a.notes && <span style={{ color: '#475569', fontStyle: 'italic' }}>"{a.notes}"</span>}
-                </div>
+                <span>Resolved &amp; Safe Cabin Log ({acknowledgedAlerts.length})</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  {showResolvedList ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </span>
               </div>
-            );
-          })}
+
+              {showResolvedList && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {acknowledgedAlerts.map(a => (
+                    <div
+                      key={a.alert_id}
+                      style={{
+                        backgroundColor: 'var(--theme-subtle-bg)',
+                        borderRadius: '6px',
+                        border: '1px solid var(--theme-subtle-border)',
+                        borderLeft: '3px solid var(--cat-success)',
+                        padding: '0.65rem 0.85rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                        opacity: 0.85
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--theme-text-primary)' }}>
+                          {a.alert_type}
+                        </span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--theme-text-muted)' }}>
+                          {a.alert_id}
+                        </span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--theme-text-secondary)' }}>
+                          Machine: <strong>{a.machine_id}</strong> ({a.operator_name || a.operator_id})
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--theme-text-muted)' }} className="mono-num">
+                          {formatUtcToLocal(a.triggered_at, supervisorTimezone).split(',')[1] || formatUtcToLocal(a.triggered_at, supervisorTimezone)}
+                        </span>
+                        <span className="cat-badge badge-success" style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem' }}>
+                          <CheckCircle size={11} /> SAFE ({a.response_time_sec ? `${a.response_time_sec}s` : 'ACK'})
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

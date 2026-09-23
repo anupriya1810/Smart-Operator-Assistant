@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DollarSign, AlertTriangle, Fuel, Activity } from 'lucide-react';
+import { DollarSign, AlertTriangle, ShieldCheck, Activity, ArrowUpRight } from 'lucide-react';
 import { formatUtcToLocal } from '../../utils/timezone';
 
 export interface TelemetryAnomaly {
@@ -34,69 +34,164 @@ export const IdleAnomalyPanel: React.FC<IdleAnomalyPanelProps> = ({
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+      {/* Panel Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.25rem',
+        borderBottom: '1px solid var(--theme-divider)',
+        paddingBottom: '0.75rem',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
         <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--theme-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--cat-yellow-subtle)', color: 'var(--cat-yellow)', padding: '0.35rem', borderRadius: '6px', display: 'inline-flex' }}>
               <Activity size={18} />
             </div>
             {t('idleAnomaly')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
-            Machine telemetry stream (Photo 2) &amp; $-cost-of-idle abuse detection.
+          <p style={{ fontSize: '0.82rem', color: 'var(--theme-text-secondary)', marginTop: '2px' }}>
+            Machine telemetry stream (Photo 2) &bull; Idle fuel burn penalties at $1.35/L off-road diesel.
           </p>
         </div>
+        <span className="cat-badge badge-custody">
+          {anomalies.length} TELEMETRY RECORDS
+        </span>
       </div>
 
-      {/* Top Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)', borderRadius: '10px', padding: '1.1rem 1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#64748B', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-            <DollarSign size={15} color="#D97706" />
-            <span>Total Idle Fuel Burn</span>
+      {/* KPI Summary Cards with Trend Indicators */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '1rem',
+        marginBottom: '1.25rem'
+      }}>
+        {/* KPI 1: Fuel Burn Cost */}
+        <div style={{
+          backgroundColor: 'var(--theme-card-bg-elevated)',
+          border: '1px solid var(--theme-card-border)',
+          borderRadius: '10px',
+          padding: '1.1rem 1.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: '0.5rem'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--theme-text-muted)', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Total Idle Fuel Burn
+              </span>
+              <DollarSign size={16} color="var(--cat-yellow)" />
+            </div>
+            <div className="mono-num" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--theme-text-primary)', marginTop: '4px' }}>
+              ${totalIdleCost.toFixed(2)}
+            </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0F172A', marginTop: '4px' }}>
-            ${totalIdleCost.toFixed(2)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--theme-text-secondary)' }}>
+            <span className="mono-num">{totalIdleMins} total idle mins</span>
+            <span style={{ color: 'var(--cat-warning)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+              <ArrowUpRight size={13} /> +12% shift burn
+            </span>
           </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 500, marginTop: '2px' }}>{totalIdleMins} total idling minutes</div>
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)', borderRadius: '10px', padding: '1.1rem 1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#64748B', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-            <AlertTriangle size={15} color="#DC2626" />
-            <span>Ghost Idling Flags</span>
+        {/* KPI 2: Ghost Idle Flags */}
+        <div style={{
+          backgroundColor: 'var(--theme-card-bg-elevated)',
+          border: '1px solid var(--theme-card-border)',
+          borderRadius: '10px',
+          padding: '1.1rem 1.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: '0.5rem'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--theme-text-muted)', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Ghost Idling Flags
+              </span>
+              <AlertTriangle size={16} color="var(--cat-danger)" />
+            </div>
+            <div className="mono-num" style={{ fontSize: '1.75rem', fontWeight: 800, color: ghostIdleEvents > 0 ? 'var(--cat-danger)' : 'var(--cat-success)', marginTop: '4px' }}>
+              {ghostIdleEvents} Events
+            </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: ghostIdleEvents > 0 ? '#DC2626' : '#059669', marginTop: '4px' }}>
-            {ghostIdleEvents} Events
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--theme-text-secondary)' }}>
+            <span>&gt;40m idle, &lt;3 cycles</span>
+            {ghostIdleEvents > 0 && (
+              <span className="cat-badge badge-danger" style={{ fontSize: '0.68rem', padding: '1px 6px' }}>
+                ACTION NEEDED
+              </span>
+            )}
           </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 500, marginTop: '2px' }}>&gt;40m idle with &lt;3 load cycles</div>
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)', borderRadius: '10px', padding: '1.1rem 1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#64748B', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-            <Fuel size={15} color="#2563EB" />
-            <span>Seatbelt Violations</span>
+        {/* KPI 3: Seatbelt Violations */}
+        <div style={{
+          backgroundColor: 'var(--theme-card-bg-elevated)',
+          border: '1px solid var(--theme-card-border)',
+          borderRadius: '10px',
+          padding: '1.1rem 1.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: '0.5rem'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--theme-text-muted)', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Seatbelt Violations
+              </span>
+              <ShieldCheck size={16} color={seatbeltViolations > 0 ? 'var(--cat-warning)' : 'var(--cat-success)'} />
+            </div>
+            <div className="mono-num" style={{ fontSize: '1.75rem', fontWeight: 800, color: seatbeltViolations > 0 ? 'var(--cat-warning)' : 'var(--cat-success)', marginTop: '4px' }}>
+              {seatbeltViolations} Shifts
+            </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: seatbeltViolations > 0 ? '#D97706' : '#059669', marginTop: '4px' }}>
-            {seatbeltViolations} Shifts
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--theme-text-secondary)' }}>
+            <span>Cabin Interlock Alert</span>
+            <span style={{ color: seatbeltViolations === 0 ? 'var(--cat-success)' : 'var(--cat-warning)', fontWeight: 600 }}>
+              {seatbeltViolations === 0 ? '100% Compliant' : 'Unbuckled Shifts'}
+            </span>
           </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 500, marginTop: '2px' }}>Operating with unbuckled belt</div>
         </div>
       </div>
 
-      {/* Telemetry Stream Log Table */}
-      <div style={{ overflowX: 'auto', border: '1px solid #E2E8F0', borderRadius: '10px', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left', backgroundColor: '#FFFFFF' }}>
+      {/* Telemetry Stream Log Table with Scannable Full-Row Tint and Right-Aligned Numeric Data */}
+      <div style={{
+        overflowX: 'auto',
+        border: '1px solid var(--theme-card-border)',
+        borderRadius: '10px'
+      }}>
+        <table style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          fontSize: '0.85rem',
+          backgroundColor: 'var(--theme-card-bg)'
+        }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', color: '#475569', textTransform: 'uppercase', fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em' }}>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Timestamp</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Machine</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Operator</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Idling Time</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Load Cycles</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Seatbelt</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Idle Penalty</th>
-              <th style={{ padding: '0.75rem 0.85rem' }}>Status</th>
+            <tr style={{
+              borderBottom: '1px solid var(--theme-card-border)',
+              backgroundColor: 'var(--theme-subtle-bg)',
+              color: 'var(--theme-text-secondary)',
+              textTransform: 'uppercase',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em'
+            }}>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'left' }}>Timestamp</th>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'left' }}>Machine</th>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'left' }}>Operator</th>
+              {/* Right-aligned numeric columns for easy vertical comparison */}
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'right' }}>Idling Time</th>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'right' }}>Load Cycles</th>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>Seatbelt</th>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'right' }}>Idle Penalty</th>
+              <th style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -104,43 +199,69 @@ export const IdleAnomalyPanel: React.FC<IdleAnomalyPanelProps> = ({
               <tr
                 key={idx}
                 style={{
-                  borderBottom: '1px solid #F1F5F9',
-                  backgroundColor: item.is_ghost_idle ? '#FEF2F2' : 'transparent',
-                  color: '#0F172A'
+                  borderBottom: '1px solid var(--theme-divider)',
+                  // Full-row tint for flagged Ghost Idle rows for instant scannability
+                  backgroundColor: item.is_ghost_idle
+                    ? 'rgba(239, 68, 68, 0.08)'
+                    : 'transparent',
+                  color: 'var(--theme-text-primary)',
+                  transition: 'background-color 0.15s ease'
                 }}
               >
-                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 500, color: '#334155' }}>
+                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 500, color: 'var(--theme-text-secondary)' }} className="mono-num">
                   {formatUtcToLocal(item.timestamp, supervisorTimezone)}
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 600 }}>
-                  <span style={{ backgroundColor: '#18181B', color: '#FFCD11', padding: '2px 7px', borderRadius: '4px', fontSize: '0.78rem' }}>
+                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 700 }}>
+                  <span style={{
+                    backgroundColor: '#111111',
+                    color: 'var(--cat-yellow)',
+                    border: '1px solid #333333',
+                    padding: '2px 7px',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800
+                  }}>
                     {item.machine_id}
                   </span>
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 500, color: '#334155' }}>
+                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 600, color: 'var(--theme-text-primary)' }}>
                   {item.operator_name || item.operator_id}
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem', color: item.idling_time_min >= 40 ? '#DC2626' : '#0F172A', fontWeight: item.idling_time_min >= 40 ? 700 : 500 }}>
+                {/* Numeric Columns Right-Aligned */}
+                <td style={{
+                  padding: '0.75rem 0.85rem',
+                  textAlign: 'right',
+                  color: item.idling_time_min >= 40 ? 'var(--cat-danger)' : 'var(--theme-text-primary)',
+                  fontWeight: item.idling_time_min >= 40 ? 800 : 500
+                }} className="mono-num">
                   {item.idling_time_min} min
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 600 }}>
+                <td style={{ padding: '0.75rem 0.85rem', textAlign: 'right', fontWeight: 700 }} className="mono-num">
                   {item.load_cycles}
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem' }}>
+                <td style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>
                   {item.seatbelt_status.toLowerCase() === 'fastened' ? (
-                    <span className="cat-badge badge-green" style={{ fontSize: '0.7rem' }}>✓ Fastened</span>
+                    <span className="cat-badge badge-success" style={{ fontSize: '0.7rem' }}>
+                      ✓ Fastened
+                    </span>
                   ) : (
-                    <span className="cat-badge badge-red" style={{ fontSize: '0.7rem' }}>⚠ Unfastened</span>
+                    <span className="cat-badge badge-danger" style={{ fontSize: '0.7rem' }}>
+                      ⚠ Unfastened
+                    </span>
                   )}
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem', fontWeight: 700, color: '#0F172A' }}>
+                <td style={{ padding: '0.75rem 0.85rem', textAlign: 'right', fontWeight: 800, color: 'var(--theme-text-primary)' }} className="mono-num">
                   ${item.estimated_idle_cost_usd.toFixed(2)}
                 </td>
-                <td style={{ padding: '0.75rem 0.85rem' }}>
+                <td style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>
                   {item.is_ghost_idle ? (
-                    <span className="cat-badge badge-red" style={{ fontSize: '0.7rem' }}>GHOST IDLE</span>
+                    <span className="cat-badge badge-danger" style={{ fontSize: '0.7rem' }}>
+                      GHOST IDLE
+                    </span>
                   ) : (
-                    <span className="cat-badge badge-blue" style={{ fontSize: '0.7rem' }}>NORMAL</span>
+                    <span className="cat-badge badge-custody" style={{ fontSize: '0.7rem' }}>
+                      NORMAL
+                    </span>
                   )}
                 </td>
               </tr>

@@ -213,7 +213,17 @@ export function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F8FAFC', color: '#0F172A' }}>
+    <div
+      className={role === 'operator' ? 'cat-theme-operator' : 'cat-theme-supervisor'}
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'var(--theme-bg)',
+        color: 'var(--theme-text-primary)',
+        transition: 'background-color 0.25s ease, color 0.25s ease'
+      }}
+    >
       {/* Top Bar with Role Switcher & Controls */}
       <Header
         currentRole={role}
@@ -232,33 +242,32 @@ export function App() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Cabin HUD Machine & Shift Banner */}
             <div style={{
-              backgroundColor: '#FFFFFF',
-              borderTop: '1px solid #E2E8F0',
-              borderRight: '1px solid #E2E8F0',
-              borderBottom: '1px solid #E2E8F0',
-              borderLeft: '4px solid #FFCD11',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              backgroundColor: 'var(--theme-banner-bg)',
+              border: '1px solid var(--theme-banner-border)',
+              borderLeft: '4px solid var(--cat-yellow)',
+              boxShadow: 'var(--theme-shadow)',
               borderRadius: '12px',
               padding: '1.25rem 1.5rem',
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: '1rem'
+              gap: '1rem',
+              transition: 'background-color 0.25s ease'
             }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <div style={{ backgroundColor: '#18181B', color: '#FFCD11', padding: '0.25rem 0.5rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <div style={{ backgroundColor: '#111111', color: '#FFCD11', border: '1px solid #333333', padding: '0.25rem 0.5rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                     <HardHat size={16} />
                     <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.04em' }}>IN-CAB HUD</span>
                   </div>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--theme-text-primary)' }}>
                     Cat 320 Hydraulic Excavator (EXC001)
                   </span>
-                  <span className="cat-badge badge-green">OWNED ASSET</span>
+                  <span className="cat-badge badge-custody">OWNED ASSET</span>
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '6px' }}>
-                  Operator: <strong style={{ color: '#0F172A' }}>{currentOperator.name}</strong> ({currentOperator.skill_level}) &bull; Shift Timezone: <strong style={{ color: '#0F172A' }}>{currentOperator.timezone}</strong>
+                <div style={{ fontSize: '0.875rem', color: 'var(--theme-text-secondary)', marginTop: '6px' }}>
+                  Operator: <strong style={{ color: 'var(--theme-text-primary)' }}>{currentOperator.name}</strong> ({currentOperator.skill_level}) &bull; Shift Timezone: <strong style={{ color: 'var(--theme-text-primary)' }}>{currentOperator.timezone}</strong>
                 </div>
               </div>
 
@@ -269,10 +278,10 @@ export function App() {
                   className="cat-btn cat-btn-secondary"
                   style={{ minHeight: '44px', fontSize: '0.875rem' }}
                 >
-                  <GraduationCap size={16} color="#FFCD11" />
+                  <GraduationCap size={18} color="#FFCD11" />
                   {t('trainingHub')}
                   {trainingData?.operator_progress && (
-                    <span style={{ backgroundColor: '#FFCD11', color: '#18181B', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, marginLeft: '4px' }}>
+                    <span style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '2px 7px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800, marginLeft: '4px' }}>
                       {trainingData.operator_progress.points} pts
                     </span>
                   )}
@@ -291,8 +300,8 @@ export function App() {
 
             {/* Safety Simulation Triggers banner */}
             <div style={{
-              backgroundColor: '#FFFBEB',
-              border: '1px solid #FDE68A',
+              backgroundColor: 'var(--theme-subtle-bg)',
+              border: '1px solid var(--theme-subtle-border)',
               borderRadius: '8px',
               padding: '0.75rem 1rem',
               display: 'flex',
@@ -302,21 +311,19 @@ export function App() {
               gap: '0.75rem',
               fontSize: '0.85rem'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#92400E', fontWeight: 600 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--cat-yellow)', fontWeight: 700 }}>
                 <span>⚡ Safety Simulator Triggers:</span>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => handleTriggerSos('Seatbelt Unfastened while Engine Engaged')}
-                  className="cat-btn cat-btn-outline"
-                  style={{ minHeight: '34px', fontSize: '0.78rem', padding: '0.25rem 0.65rem' }}
+                  className="cat-btn cat-btn-outline cat-btn-sm"
                 >
                   Simulate Seatbelt Alert
                 </button>
                 <button
                   onClick={() => handleTriggerSos('Proximity Hazard: Ground Crew Detected < 2m')}
-                  className="cat-btn cat-btn-outline"
-                  style={{ minHeight: '34px', fontSize: '0.78rem', padding: '0.25rem 0.65rem' }}
+                  className="cat-btn cat-btn-outline cat-btn-sm"
                 >
                   Simulate Proximity Hazard
                 </button>
@@ -343,20 +350,20 @@ export function App() {
                 {trainingData && (
                   <div className="cat-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: '#0F172A', fontSize: '0.95rem' }}>
-                        <GraduationCap size={18} color="#D97706" />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: 'var(--theme-text-primary)', fontSize: '0.95rem' }}>
+                        <GraduationCap size={18} color="var(--cat-yellow)" />
                         <span>Portal &amp; Safety Simulator</span>
                       </div>
-                      <span className="cat-badge badge-black">Score: {trainingData.operator_progress.points} pts</span>
+                      <span className="cat-badge badge-cat-brand">Score: {trainingData.operator_progress.points} pts</span>
                     </div>
 
-                    <p style={{ fontSize: '0.85rem', color: '#64748B', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--theme-text-secondary)', marginBottom: '0.75rem', lineHeight: '1.4' }}>
                       Interactive modules for mastering in-cab portal tools (voice co-pilot, 45s SOS) and critical cabin safety protocols.
                     </p>
 
-                    <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.5rem 0.75rem', borderRadius: '6px', marginBottom: '0.85rem', fontSize: '0.8rem' }}>
-                      <span style={{ color: '#64748B' }}>Telemetry Recommendation: </span>
-                      <strong style={{ color: '#0F172A' }}>
+                    <div style={{ backgroundColor: 'var(--theme-subtle-bg)', border: '1px solid var(--theme-subtle-border)', padding: '0.5rem 0.75rem', borderRadius: '6px', marginBottom: '0.85rem', fontSize: '0.8rem' }}>
+                      <span style={{ color: 'var(--theme-text-muted)' }}>Telemetry Recommendation: </span>
+                      <strong style={{ color: 'var(--theme-text-primary)' }}>
                         {trainingData.scenarios.find(s => s.id === trainingData.recommended_scenario_id)?.title || 'Portal & Safety Training'}
                       </strong>
                     </div>
@@ -364,7 +371,7 @@ export function App() {
                     <button
                       onClick={() => setShowTrainingModal(true)}
                       className="cat-btn cat-btn-primary"
-                      style={{ width: '100%', minHeight: '42px', fontSize: '0.875rem' }}
+                      style={{ width: '100%', minHeight: '44px', fontSize: '0.875rem' }}
                     >
                       Launch Operator Simulator
                     </button>
@@ -382,27 +389,28 @@ export function App() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Top Supervisor Controls & Metrics */}
             <div style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              backgroundColor: 'var(--theme-card-bg)',
+              border: '1px solid var(--theme-card-border)',
+              boxShadow: 'var(--theme-shadow)',
               borderRadius: '12px',
               padding: '1.25rem 1.5rem',
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: '1rem'
+              gap: '1rem',
+              transition: 'background-color 0.25s ease'
             }}>
               <div>
-                <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#0F172A' }}>
+                <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--theme-text-primary)' }}>
                   Marcus Vance &mdash; Site Operations Hub
                 </h1>
-                <p style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '4px' }}>
+                <p style={{ fontSize: '0.875rem', color: 'var(--theme-text-secondary)', marginTop: '4px' }}>
                   Managing <strong>{machines.length}</strong> machines across <strong>{operators.length}</strong> operators &bull; Coordinated UTC storage, viewing in <strong>America/New_York</strong>.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => setShowSchedulerModal(true)}
                   className="cat-btn cat-btn-primary"

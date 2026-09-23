@@ -102,37 +102,37 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
       left: 0,
       width: '100vw',
       height: '100vh',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 9999,
       padding: '1rem',
-      backdropFilter: 'blur(3px)'
+      backdropFilter: 'blur(5px)'
     }}>
       <div style={{
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'var(--theme-card-bg)',
+        border: '1px solid var(--theme-card-border)',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4)',
         borderRadius: '16px',
         padding: '1.75rem',
         width: '100%',
         maxWidth: '560px',
         maxHeight: '90vh',
         overflowY: 'auto',
-        color: '#0F172A',
+        color: 'var(--theme-text-primary)',
         display: 'flex',
         flexDirection: 'column',
         gap: '1.25rem'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--theme-divider)', paddingBottom: '0.75rem' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--theme-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--cat-yellow-subtle)', color: 'var(--cat-yellow)', padding: '0.35rem', borderRadius: '6px', display: 'inline-flex' }}>
               <Calendar size={18} />
             </div>
             {t('scheduleTask')}
           </h2>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--theme-text-muted)', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
@@ -141,10 +141,15 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Operator and Machine */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Assign Operator:
               </label>
-              <select value={operatorId} onChange={(e) => setOperatorId(e.target.value)} className="cat-input">
+              <select
+                value={operatorId}
+                onChange={(e) => setOperatorId(e.target.value)}
+                className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
+              >
                 {operators.map(op => (
                   <option key={op.operator_id} value={op.operator_id}>
                     {op.name} ({op.skill_level})
@@ -154,10 +159,15 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Assign Machine:
               </label>
-              <select value={machineId} onChange={(e) => setMachineId(e.target.value)} className="cat-input">
+              <select
+                value={machineId}
+                onChange={(e) => setMachineId(e.target.value)}
+                className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
+              >
                 {machines.map(m => (
                   <option key={m.machine_id} value={m.machine_id}>
                     {m.model} ({m.age_years} yrs)
@@ -170,10 +180,15 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Task Type and Weather */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Task Type:
               </label>
-              <select value={taskType} onChange={(e) => setTaskType(e.target.value)} className="cat-input">
+              <select
+                value={taskType}
+                onChange={(e) => setTaskType(e.target.value)}
+                className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
+              >
                 <option value="Earth Excavation">Earth Excavation</option>
                 <option value="Trenching">Trenching</option>
                 <option value="Material Loading">Material Loading</option>
@@ -183,10 +198,15 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Site Weather:
               </label>
-              <select value={weather} onChange={(e) => setWeather(e.target.value)} className="cat-input">
+              <select
+                value={weather}
+                onChange={(e) => setWeather(e.target.value)}
+                className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
+              >
                 <option value="Sunny">Sunny</option>
                 <option value="Rainy">Rainy</option>
                 <option value="Cloudy">Cloudy</option>
@@ -198,7 +218,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Location and Baseline Estimate */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Location Zone:
               </label>
               <input
@@ -207,12 +227,13 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
                 onChange={(e) => setLocationZone(e.target.value)}
                 placeholder="e.g. Zone B - North Trench"
                 className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
                 required
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Est. Min:
               </label>
               <input
@@ -222,6 +243,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
                 min="10"
                 max="600"
                 className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
               />
             </div>
           </div>
@@ -229,7 +251,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Local Datetime Inputs (Automatically converted to UTC on submit) */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Scheduled Start (Local):
               </label>
               <input
@@ -237,12 +259,13 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
                 value={scheduledStartLocal}
                 onChange={(e) => setScheduledStartLocal(e.target.value)}
                 className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
                 required
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
                 Scheduled End (Local):
               </label>
               <input
@@ -250,6 +273,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
                 value={scheduledEndLocal}
                 onChange={(e) => setScheduledEndLocal(e.target.value)}
                 className="cat-input"
+                style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
                 required
               />
             </div>
@@ -258,8 +282,8 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Live ML Predicted Duration Panel */}
           {predictedResult && (
             <div style={{
-              backgroundColor: '#FFFBEB',
-              border: '1px solid #FDE68A',
+              backgroundColor: 'var(--cat-yellow-subtle)',
+              border: '1px solid var(--cat-yellow)',
               borderRadius: '8px',
               padding: '0.85rem 1rem',
               display: 'flex',
@@ -267,22 +291,22 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
               gap: '0.35rem'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#92400E', fontSize: '0.85rem', fontWeight: 600 }}>
-                  <Cpu size={16} color="#D97706" />
-                  <span>AI Dynamic Duration Predictor:</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--theme-text-primary)', fontSize: '0.85rem', fontWeight: 700 }}>
+                  <Cpu size={16} color="var(--cat-yellow)" />
+                  <span>AI Dynamic Duration Prediction:</span>
                 </div>
-                <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#92400E' }}>
+                <div className="mono-num" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--theme-text-primary)' }}>
                   {predictedResult.predicted_time_min} min
                 </div>
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#78350F' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--theme-text-secondary)' }}>
                 {predictedResult.explanation}
               </div>
             </div>
           )}
 
           <div>
-            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
+            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
               Notes / Instructions for In-Cab HUD:
             </label>
             <input
@@ -291,6 +315,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Ensure trench shoring box is positioned"
               className="cat-input"
+              style={{ backgroundColor: 'var(--theme-input-bg)', borderColor: 'var(--theme-input-border)', color: 'var(--theme-text-primary)' }}
             />
           </div>
 
@@ -299,7 +324,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
               type="submit"
               disabled={isSubmitting}
               className="cat-btn cat-btn-primary"
-              style={{ flex: 1 }}
+              style={{ flex: 1, minHeight: '44px' }}
             >
               <Check size={16} />
               {isSubmitting ? 'Scheduling...' : 'Confirm & Dispatch to Cab'}
@@ -308,7 +333,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
               type="button"
               onClick={onClose}
               className="cat-btn cat-btn-outline"
-              style={{ flex: 1 }}
+              style={{ flex: 1, minHeight: '44px' }}
             >
               {t('cancel')}
             </button>

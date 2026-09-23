@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Truck, ArrowRightLeft, Calendar, Building } from 'lucide-react';
+import { Truck, ArrowRightLeft, Calendar, Building, Shield, Download, Upload } from 'lucide-react';
 import { formatUtcToLocal } from '../../utils/timezone';
 
 export interface MachineItem {
@@ -61,33 +61,55 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
     }
   };
 
+  // Semantic neutral custody badges distinct from safety alert red/green/amber
   const getCustodyBadge = (status: string) => {
     switch (status) {
       case 'rented_in':
-        return <span className="cat-badge badge-blue">📥 {t('rented_in')}</span>;
+        return (
+          <span className="cat-badge badge-custody">
+            <Download size={11} /> {t('rented_in')}
+          </span>
+        );
       case 'rented_out':
-        return <span className="cat-badge badge-purple">📤 {t('rented_out')}</span>;
+        return (
+          <span className="cat-badge badge-custody">
+            <Upload size={11} /> {t('rented_out')}
+          </span>
+        );
       default:
-        return <span className="cat-badge badge-green">🛡 {t('owned')}</span>;
+        return (
+          <span className="cat-badge badge-custody">
+            <Shield size={11} /> {t('owned')}
+          </span>
+        );
     }
   };
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.25rem',
+        borderBottom: '1px solid var(--theme-divider)',
+        paddingBottom: '0.75rem',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
         <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--theme-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--cat-yellow-subtle)', color: 'var(--cat-yellow)', padding: '0.35rem', borderRadius: '6px', display: 'inline-flex' }}>
               <Truck size={18} />
             </div>
             {t('fleetView')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
-            Multi-custody asset tracking: Owned equipment, rented-in contractor units &amp; rented-out fleet.
+          <p style={{ fontSize: '0.82rem', color: 'var(--theme-text-secondary)', marginTop: '2px' }}>
+            Multi-custody fleet asset management: Owned units, contractor leases &amp; subcontractor loans.
           </p>
         </div>
-        <div style={{ fontSize: '0.85rem', color: '#64748B', fontWeight: 500 }}>
-          <strong style={{ color: '#0F172A' }}>{machines.length}</strong> Total Machines
+        <div style={{ fontSize: '0.82rem', color: 'var(--theme-text-secondary)', fontWeight: 600 }}>
+          <strong style={{ color: 'var(--theme-text-primary)' }}>{machines.length}</strong> Total Fleet Units
         </div>
       </div>
 
@@ -95,58 +117,76 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
         {machines.map(m => (
           <div
             key={m.machine_id}
+            className="task-item-card"
             style={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'var(--theme-card-bg)',
               borderRadius: '10px',
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+              border: '1px solid var(--theme-card-border)',
               padding: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              gap: '0.75rem'
+              gap: '0.85rem'
             }}
           >
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#92400E', fontWeight: 600, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '2px 8px', borderRadius: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--cat-yellow)',
+                  fontWeight: 800,
+                  backgroundColor: '#111111',
+                  border: '1px solid #333333',
+                  padding: '2px 8px',
+                  borderRadius: '4px'
+                }}>
                   {m.machine_id}
                 </span>
                 {getCustodyBadge(m.custody_status)}
               </div>
 
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', marginTop: '0.5rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--theme-text-primary)', marginTop: '0.65rem' }}>
                 {m.model}
               </div>
-              <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
-                Category: <strong style={{ color: '#0F172A' }}>{m.type}</strong> &bull; Age: <strong style={{ color: '#0F172A' }}>{m.age_years} yrs</strong>
+
+              <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-secondary)', marginTop: '2px' }}>
+                Type: <strong style={{ color: 'var(--theme-text-primary)' }}>{m.type}</strong> &bull; Age: <strong style={{ color: 'var(--theme-text-primary)' }}>{m.age_years} yrs</strong>
               </div>
 
               {m.current_operator_name && (
-                <div style={{ fontSize: '0.78rem', color: '#065F46', fontWeight: 600, marginTop: '0.5rem', backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '4px', display: 'inline-block' }}>
-                  Active Operator: <strong>{m.current_operator_name}</strong>
+                <div style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--cat-success)',
+                  fontWeight: 600,
+                  marginTop: '0.6rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}>
+                  <span>Active Operator:</span>
+                  <strong style={{ color: 'var(--theme-text-primary)' }}>{m.current_operator_name}</strong>
                 </div>
               )}
             </div>
 
-            {/* Rental Details */}
+            {/* Clean Rental Details without nested bordered box */}
             {m.custody_status !== 'owned' && (
               <div style={{
-                backgroundColor: '#F8FAFC',
-                padding: '0.65rem 0.75rem',
-                borderRadius: '6px',
+                borderTop: '1px solid var(--theme-divider)',
+                paddingTop: '0.65rem',
                 fontSize: '0.8rem',
-                border: '1px solid #E2E8F0',
-                color: '#334155'
+                color: 'var(--theme-text-secondary)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#0F172A', fontWeight: 600 }}>
-                  <Building size={13} color="#D97706" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--theme-text-primary)', fontWeight: 600 }}>
+                  <Building size={13} color="var(--cat-yellow)" />
                   <span>Counterparty: {m.rental_counterparty || 'N/A'}</span>
                 </div>
                 {m.rental_start && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#64748B', marginTop: '3px' }}>
-                    <Calendar size={13} color="#64748B" />
-                    <span>Period: {formatUtcToLocal(m.rental_start, supervisorTimezone).split(',')[0]} &ndash; {formatUtcToLocal(m.rental_end, supervisorTimezone).split(',')[0]}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--theme-text-muted)', marginTop: '3px' }}>
+                    <Calendar size={13} />
+                    <span className="mono-num">
+                      {formatUtcToLocal(m.rental_start, supervisorTimezone).split(',')[0]} &ndash; {formatUtcToLocal(m.rental_end, supervisorTimezone).split(',')[0]}
+                    </span>
                   </div>
                 )}
               </div>
@@ -154,8 +194,8 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
 
             <button
               onClick={() => openRentalModal(m)}
-              className="cat-btn cat-btn-secondary"
-              style={{ minHeight: '38px', fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+              className="cat-btn cat-btn-secondary cat-btn-sm"
+              style={{ width: '100%', marginTop: '0.25rem' }}
             >
               <ArrowRightLeft size={14} />
               Manage Custody / Rental
@@ -172,7 +212,7 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
           left: 0,
           width: '100vw',
           height: '100vh',
-          backgroundColor: 'rgba(15, 23, 42, 0.5)',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -181,94 +221,118 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
           backdropFilter: 'blur(6px)'
         }}>
           <div style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+            backgroundColor: 'var(--theme-card-bg)',
+            border: '1px solid var(--theme-card-border)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
             borderRadius: '16px',
             padding: '1.75rem',
             width: '100%',
             maxWidth: '480px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem',
-            color: '#0F172A'
+            gap: '1.1rem',
+            color: 'var(--theme-text-primary)'
           }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--theme-text-primary)', borderBottom: '1px solid var(--theme-divider)', paddingBottom: '0.65rem' }}>
               Manage Custody: {selectedMachine.model} ({selectedMachine.machine_id})
             </h3>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
-                Custody Status:
+              <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Custody Status
               </label>
               <select
                 value={custodyStatus}
-                onChange={(e) => setCustodyStatus(e.target.value as any)}
+                onChange={e => setCustodyStatus(e.target.value as any)}
                 className="cat-input"
+                style={{
+                  marginTop: '0.35rem',
+                  backgroundColor: 'var(--theme-input-bg)',
+                  borderColor: 'var(--theme-input-border)',
+                  color: 'var(--theme-text-primary)'
+                }}
               >
-                <option value="owned">Owned (In-House Fleet)</option>
-                <option value="rented_in">Rented In (From External Supplier)</option>
-                <option value="rented_out">Rented Out (To Subcontractor)</option>
+                <option value="owned">Owned Equipment</option>
+                <option value="rented_in">Rented In (From Third-Party / Contractor)</option>
+                <option value="rented_out">Rented Out (Leased to Subcontractor)</option>
               </select>
             </div>
 
             {custodyStatus !== 'owned' && (
               <>
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
-                    Counterparty Company:
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Counterparty Company / Contractor
                   </label>
                   <input
                     type="text"
                     value={counterparty}
-                    onChange={(e) => setCounterparty(e.target.value)}
-                    placeholder="e.g. Apex Heavy Fleet Inc."
+                    onChange={e => setCounterparty(e.target.value)}
+                    placeholder="e.g. Apex Earthmoving LLC"
                     className="cat-input"
+                    style={{
+                      marginTop: '0.35rem',
+                      backgroundColor: 'var(--theme-input-bg)',
+                      borderColor: 'var(--theme-input-border)',
+                      color: 'var(--theme-text-primary)'
+                    }}
                   />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
-                      Start Date:
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase' }}>
+                      Rental Start Date
                     </label>
                     <input
                       type="date"
                       value={rentalStart}
-                      onChange={(e) => setRentalStart(e.target.value)}
+                      onChange={e => setRentalStart(e.target.value)}
                       className="cat-input"
+                      style={{
+                        marginTop: '0.35rem',
+                        backgroundColor: 'var(--theme-input-bg)',
+                        borderColor: 'var(--theme-input-border)',
+                        color: 'var(--theme-text-primary)'
+                      }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
-                      End Date:
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--theme-text-secondary)', textTransform: 'uppercase' }}>
+                      Rental End Date
                     </label>
                     <input
                       type="date"
                       value={rentalEnd}
-                      onChange={(e) => setRentalEnd(e.target.value)}
+                      onChange={e => setRentalEnd(e.target.value)}
                       className="cat-input"
+                      style={{
+                        marginTop: '0.35rem',
+                        backgroundColor: 'var(--theme-input-bg)',
+                        borderColor: 'var(--theme-input-border)',
+                        color: 'var(--theme-text-primary)'
+                      }}
                     />
                   </div>
                 </div>
               </>
             )}
 
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-              <button
-                disabled={isSubmitting}
-                onClick={handleSaveRental}
-                className="cat-btn cat-btn-primary"
-                style={{ flex: 1 }}
-              >
-                {isSubmitting ? 'Saving...' : t('saveChanges')}
-              </button>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.75rem' }}>
               <button
                 onClick={() => setSelectedMachine(null)}
                 className="cat-btn cat-btn-outline"
-                style={{ flex: 1 }}
+                style={{ minHeight: '44px' }}
               >
                 {t('cancel')}
+              </button>
+              <button
+                onClick={handleSaveRental}
+                disabled={isSubmitting}
+                className="cat-btn cat-btn-primary"
+                style={{ minHeight: '44px' }}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Custody Updates'}
               </button>
             </div>
           </div>

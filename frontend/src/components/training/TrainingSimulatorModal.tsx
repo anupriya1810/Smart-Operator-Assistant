@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Award, CheckCircle, AlertTriangle, ShieldCheck, Zap, X, Radio, Shield, Laptop, BookOpen } from 'lucide-react';
+import { Award, CheckCircle, AlertTriangle, ShieldCheck, Zap, X, Shield, Laptop, BookOpen } from 'lucide-react';
 
 interface ScenarioOption {
   id: string;
@@ -84,7 +84,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
       left: 0,
       width: '100vw',
       height: '100vh',
-      backgroundColor: 'rgba(15, 23, 42, 0.6)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -97,52 +97,60 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
         maxWidth: '740px',
         maxHeight: '92vh',
         overflowY: 'auto',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--theme-card-bg)',
         borderRadius: '16px',
-        border: '1px solid #E2E8F0',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+        border: '1px solid var(--theme-card-border)',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4)',
         padding: '1.75rem',
-        color: '#0F172A',
+        color: 'var(--theme-text-primary)',
         display: 'flex',
         flexDirection: 'column',
         gap: '1.25rem'
       }}>
         {/* Top Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--theme-divider)', paddingBottom: '0.85rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span className="cat-badge badge-black">
+              <span className="cat-badge badge-cat-brand">
                 <BookOpen size={12} />
                 OPERATOR SIMULATOR &amp; TRAINING
               </span>
               {currentScenario?.category === 'portal' ? (
-                <span className="cat-badge badge-blue">
+                <span className="cat-badge badge-custody">
                   <Laptop size={12} /> Portal Skills Training
                 </span>
               ) : (
-                <span className="cat-badge badge-yellow">
+                <span className="cat-badge badge-warning">
                   <Shield size={12} /> Jobsite Safety Training
                 </span>
               )}
               {currentScenario?.id === recommendedScenarioId && (
-                <span className="cat-badge badge-green">★ Telemetry Recommended</span>
+                <span className="cat-badge badge-success">★ Telemetry Recommended</span>
               )}
             </div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginTop: '0.4rem' }}>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--theme-text-primary)', marginTop: '0.4rem' }}>
               {currentScenario?.title}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', padding: '0.25rem' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--theme-text-muted)', cursor: 'pointer', padding: '0.25rem' }}
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Curriculum Pillar Filter Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '4px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          backgroundColor: 'var(--theme-subtle-bg)',
+          padding: '4px',
+          borderRadius: '8px',
+          border: '1px solid var(--theme-subtle-border)'
+        }}>
           <button
             onClick={() => setFilterCategory('all')}
             style={{
@@ -151,11 +159,11 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               borderRadius: '6px',
               border: 'none',
               fontSize: '0.8rem',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
-              backgroundColor: filterCategory === 'all' ? '#FFFFFF' : 'transparent',
-              color: filterCategory === 'all' ? '#0F172A' : '#64748B',
-              boxShadow: filterCategory === 'all' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none'
+              backgroundColor: filterCategory === 'all' ? 'var(--theme-card-bg-elevated)' : 'transparent',
+              color: filterCategory === 'all' ? 'var(--theme-text-primary)' : 'var(--theme-text-secondary)',
+              boxShadow: filterCategory === 'all' ? '0 1px 3px rgba(0,0,0,0.2)' : 'none'
             }}
           >
             All Modules ({scenarios.length})
@@ -168,11 +176,11 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               borderRadius: '6px',
               border: 'none',
               fontSize: '0.8rem',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
-              backgroundColor: filterCategory === 'portal' ? '#FFFFFF' : 'transparent',
-              color: filterCategory === 'portal' ? '#1D4ED8' : '#64748B',
-              boxShadow: filterCategory === 'portal' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              backgroundColor: filterCategory === 'portal' ? 'var(--theme-card-bg-elevated)' : 'transparent',
+              color: filterCategory === 'portal' ? 'var(--cat-yellow)' : 'var(--theme-text-secondary)',
+              boxShadow: filterCategory === 'portal' ? '0 1px 3px rgba(0,0,0,0.2)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -190,11 +198,11 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               borderRadius: '6px',
               border: 'none',
               fontSize: '0.8rem',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
-              backgroundColor: filterCategory === 'safety' ? '#FFFFFF' : 'transparent',
-              color: filterCategory === 'safety' ? '#B45309' : '#64748B',
-              boxShadow: filterCategory === 'safety' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              backgroundColor: filterCategory === 'safety' ? 'var(--theme-card-bg-elevated)' : 'transparent',
+              color: filterCategory === 'safety' ? 'var(--cat-warning)' : 'var(--theme-text-secondary)',
+              boxShadow: filterCategory === 'safety' ? '0 1px 3px rgba(0,0,0,0.2)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -207,7 +215,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
         </div>
 
         {/* Scenario Carousel / Quick Selector */}
-        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '2px' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '4px' }}>
           {filteredScenarios.map((s) => {
             const originalIndex = scenarios.findIndex(orig => orig.id === s.id);
             const isSelected = originalIndex === selectedScenarioIndex;
@@ -224,20 +232,20 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                 style={{
                   padding: '0.5rem 0.85rem',
                   borderRadius: '8px',
-                  border: isSelected ? '1.5px solid #F59E0B' : '1px solid #E2E8F0',
-                  backgroundColor: isSelected ? '#FEF3C7' : '#FFFFFF',
-                  color: isSelected ? '#92400E' : '#334155',
+                  border: isSelected ? '1.5px solid var(--cat-yellow)' : '1px solid var(--theme-card-border)',
+                  backgroundColor: isSelected ? 'var(--cat-yellow-subtle)' : 'var(--theme-card-bg-elevated)',
+                  color: isSelected ? 'var(--cat-yellow)' : 'var(--theme-text-secondary)',
                   fontSize: '0.78rem',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  boxShadow: isSelected ? '0 1px 3px rgba(245, 158, 11, 0.15)' : 'none'
+                  boxShadow: isSelected ? '0 1px 3px var(--cat-yellow-glow)' : 'none'
                 }}
               >
-                {isCompleted && <span style={{ color: '#059669' }}>✓</span>}
+                {isCompleted && <span style={{ color: 'var(--cat-success)' }}>✓</span>}
                 <span>{s.category === 'portal' ? '💻' : '🛡️'} {s.title.slice(0, 26)}...</span>
               </button>
             );
@@ -249,19 +257,19 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: '#F8FAFC',
+          backgroundColor: 'var(--theme-subtle-bg)',
           padding: '0.75rem 1rem',
           borderRadius: '10px',
-          border: '1px solid #E2E8F0'
+          border: '1px solid var(--theme-subtle-border)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0F172A', fontWeight: 600 }}>
-            <Award size={18} color="#D97706" />
-            <span>Operator Training Score: <strong style={{ color: '#D97706' }}>{operatorProgress.points}</strong> pts</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--theme-text-primary)', fontWeight: 700 }}>
+            <Award size={18} color="var(--cat-yellow)" />
+            <span>Operator Training Score: <strong style={{ color: 'var(--cat-yellow)' }}>{operatorProgress.points}</strong> pts</span>
           </div>
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {operatorProgress.badges.map((b, idx) => (
-              <span key={idx} className="cat-badge badge-green" style={{ fontSize: '0.72rem' }}>
+              <span key={idx} className="cat-badge badge-success" style={{ fontSize: '0.72rem' }}>
                 🏅 {b}
               </span>
             ))}
@@ -270,12 +278,10 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
 
         {/* Scenario Situation Card */}
         <div style={{
-          backgroundColor: '#F8FAFC',
-          borderTop: '1px solid #E2E8F0',
-          borderRight: '1px solid #E2E8F0',
-          borderBottom: '1px solid #E2E8F0',
-          borderLeft: '4px solid #FFCD11',
-          padding: '1rem 1.25rem',
+          backgroundColor: 'var(--theme-card-bg-elevated)',
+          border: '1px solid var(--theme-card-border)',
+          borderLeft: '4px solid var(--cat-yellow)',
+          padding: '1.1rem 1.25rem',
           borderRadius: '10px'
         }}>
           <div style={{
@@ -283,34 +289,44 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             gap: '0.75rem',
             marginBottom: '0.5rem',
             fontSize: '0.8rem',
-            color: '#64748B',
+            color: 'var(--theme-text-muted)',
             flexWrap: 'wrap'
           }}>
-            <span>Category: <strong style={{ color: currentScenario?.category === 'portal' ? '#1D4ED8' : '#B45309' }}>{currentScenario?.category === 'portal' ? 'Portal Operations' : 'Jobsite Safety'}</strong></span>
+            <span>Category: <strong style={{ color: currentScenario?.category === 'portal' ? 'var(--cat-yellow)' : 'var(--cat-warning)' }}>{currentScenario?.category === 'portal' ? 'Portal Operations' : 'Jobsite Safety'}</strong></span>
             <span>&bull;</span>
-            <span>Machine: <strong style={{ color: '#334155' }}>Cat 320 ({currentScenario?.machine_age_yrs} yrs)</strong></span>
+            <span>Machine: <strong style={{ color: 'var(--theme-text-primary)' }}>Cat 320 ({currentScenario?.machine_age_yrs} yrs)</strong></span>
             <span>&bull;</span>
-            <span>Weather: <strong style={{ color: '#334155' }}>{currentScenario?.weather}</strong></span>
+            <span>Weather: <strong style={{ color: 'var(--theme-text-primary)' }}>{currentScenario?.weather}</strong></span>
             <span>&bull;</span>
-            <span>Difficulty: <strong style={{ color: '#334155' }}>{currentScenario?.difficulty}</strong></span>
+            <span>Difficulty: <strong style={{ color: 'var(--theme-text-primary)' }}>{currentScenario?.difficulty}</strong></span>
           </div>
 
           {currentScenario?.portal_feature && (
-            <div style={{ fontSize: '0.8rem', color: '#1E40AF', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', padding: '0.35rem 0.65rem', borderRadius: '6px', marginBottom: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <Radio size={13} color="#2563EB" />
+            <div style={{
+              fontSize: '0.8rem',
+              color: 'var(--cat-yellow)',
+              backgroundColor: 'var(--cat-yellow-subtle)',
+              border: '1px solid rgba(255, 205, 17, 0.3)',
+              padding: '0.35rem 0.65rem',
+              borderRadius: '6px',
+              marginBottom: '0.75rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}>
               <span>Target Portal Feature: <strong>{currentScenario.portal_feature}</strong></span>
             </div>
           )}
 
-          <div style={{ fontSize: '0.95rem', lineHeight: '1.5', color: '#0F172A', fontWeight: 500 }}>
-            <strong style={{ color: '#0F172A' }}>In-Cab Situation:</strong> {currentScenario?.active_condition}
+          <div style={{ fontSize: '0.95rem', lineHeight: '1.5', color: 'var(--theme-text-primary)', fontWeight: 500 }}>
+            <strong style={{ color: 'var(--cat-yellow)' }}>In-Cab Situation:</strong> {currentScenario?.active_condition}
           </div>
         </div>
 
         {/* Options */}
         {!result ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--theme-text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Choose Operator Action / Protocol:
             </div>
 
@@ -319,9 +335,9 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                 key={opt.id}
                 onClick={() => setSelectedOptionId(opt.id)}
                 style={{
-                  backgroundColor: selectedOptionId === opt.id ? '#FFFBEB' : '#FFFFFF',
-                  border: selectedOptionId === opt.id ? '1px solid #F59E0B' : '1px solid #E2E8F0',
-                  boxShadow: selectedOptionId === opt.id ? '0 1px 3px rgba(245, 158, 11, 0.15)' : '0 1px 2px rgba(0, 0, 0, 0.03)',
+                  backgroundColor: selectedOptionId === opt.id ? 'var(--cat-yellow-subtle)' : 'var(--theme-card-bg-elevated)',
+                  border: selectedOptionId === opt.id ? '1.5px solid var(--cat-yellow)' : '1px solid var(--theme-card-border)',
+                  boxShadow: selectedOptionId === opt.id ? '0 1px 8px var(--cat-yellow-glow)' : 'none',
                   borderRadius: '10px',
                   padding: '1rem',
                   cursor: 'pointer',
@@ -335,19 +351,19 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                   width: '20px',
                   height: '20px',
                   borderRadius: '50%',
-                  border: selectedOptionId === opt.id ? '2px solid #D97706' : '2px solid #CBD5E1',
+                  border: selectedOptionId === opt.id ? '2px solid var(--cat-yellow)' : '2px solid var(--theme-text-muted)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                   marginTop: '2px',
-                  backgroundColor: selectedOptionId === opt.id ? '#FFCD11' : '#FFFFFF'
+                  backgroundColor: selectedOptionId === opt.id ? 'var(--cat-yellow)' : 'transparent'
                 }}>
                   {selectedOptionId === opt.id && (
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#18181B' }} />
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#111111' }} />
                   )}
                 </div>
-                <div style={{ fontSize: '0.9rem', color: '#0F172A', fontWeight: 500, lineHeight: '1.4' }}>
+                <div style={{ fontSize: '0.9rem', color: 'var(--theme-text-primary)', fontWeight: 500, lineHeight: '1.4' }}>
                   {opt.text}
                 </div>
               </div>
@@ -359,6 +375,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               className="cat-btn cat-btn-primary"
               style={{
                 marginTop: '0.5rem',
+                minHeight: '48px',
                 opacity: !selectedOptionId ? 0.5 : 1,
                 cursor: !selectedOptionId ? 'not-allowed' : 'pointer'
               }}
@@ -369,10 +386,9 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
         ) : (
           /* Consequence Result Card */
           <div style={{
-            backgroundColor: '#FFFFFF',
+            backgroundColor: 'var(--theme-card-bg-elevated)',
             border: '1px solid',
-            borderColor: result.safety_score >= 80 ? '#A7F3D0' : '#FECACA',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+            borderColor: result.safety_score >= 80 ? 'var(--cat-success)' : 'var(--cat-danger)',
             borderRadius: '12px',
             padding: '1.25rem',
             display: 'flex',
@@ -380,57 +396,56 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             gap: '1rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.05rem', color: result.safety_score >= 80 ? '#065F46' : '#991B1B' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.1rem', color: result.safety_score >= 80 ? 'var(--cat-success)' : 'var(--cat-danger)' }}>
                 {result.safety_score >= 80 ? <CheckCircle size={22} /> : <AlertTriangle size={22} />}
                 <span>{result.safety_score >= 80 ? 'Correct Protocol & Portal Mastery' : 'Safety / Protocol Violation'}</span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: '#92400E', fontWeight: 700, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '2px 8px', borderRadius: '4px' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--cat-yellow)', fontWeight: 800, backgroundColor: '#111111', border: '1px solid #333333', padding: '2px 8px', borderRadius: '4px' }}>
                 +{result.safety_score + result.efficiency_score} pts
               </div>
             </div>
 
             {/* Score Meters */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '0.85rem', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#065F46', fontWeight: 600 }}>
-                  <ShieldCheck size={15} color="#065F46" />
+              <div style={{ backgroundColor: 'var(--theme-subtle-bg)', border: '1px solid var(--theme-subtle-border)', padding: '0.85rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: 'var(--cat-success)', fontWeight: 700 }}>
+                  <ShieldCheck size={15} />
                   <span>Safety Compliance</span>
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#065F46' }}>
+                <div className="mono-num" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--cat-success)', marginTop: '2px' }}>
                   {result.safety_score}%
                 </div>
               </div>
 
-              <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', padding: '0.85rem', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#92400E', fontWeight: 600 }}>
-                  <Zap size={15} color="#D97706" />
+              <div style={{ backgroundColor: 'var(--theme-subtle-bg)', border: '1px solid var(--theme-subtle-border)', padding: '0.85rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: 'var(--cat-yellow)', fontWeight: 700 }}>
+                  <Zap size={15} />
                   <span>Portal &amp; Operational Efficiency</span>
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#92400E' }}>
+                <div className="mono-num" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--cat-yellow)', marginTop: '2px' }}>
                   {result.efficiency_score}%
                 </div>
               </div>
             </div>
 
-            <div style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.5', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.85rem', borderRadius: '8px' }}>
-              <strong style={{ color: '#0F172A' }}>Instructor Briefing:</strong> {result.feedback}
+            <div style={{ fontSize: '0.9rem', color: 'var(--theme-text-secondary)', lineHeight: '1.5', backgroundColor: 'var(--theme-subtle-bg)', border: '1px solid var(--theme-subtle-border)', padding: '0.85rem', borderRadius: '8px' }}>
+              <strong style={{ color: 'var(--theme-text-primary)' }}>Instructor Briefing:</strong> {result.feedback}
             </div>
 
             {result.badge_unlocked && (
               <div style={{
-                backgroundColor: '#FEF3C7',
-                border: '1px solid #FDE68A',
-                boxShadow: '0 1px 3px rgba(245, 158, 11, 0.15)',
+                backgroundColor: 'var(--cat-yellow-subtle)',
+                border: '1px solid var(--cat-yellow)',
                 padding: '0.85rem 1rem',
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem'
               }}>
-                <Award size={28} color="#D97706" />
+                <Award size={28} color="var(--cat-yellow)" />
                 <div>
-                  <div style={{ fontWeight: 700, color: '#92400E', fontSize: '0.78rem' }}>NEW BADGE UNLOCKED!</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#78350F' }}>{result.badge_unlocked}</div>
+                  <div style={{ fontWeight: 800, color: 'var(--cat-yellow)', fontSize: '0.75rem', textTransform: 'uppercase' }}>NEW BADGE UNLOCKED!</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--theme-text-primary)' }}>{result.badge_unlocked}</div>
                 </div>
               </div>
             )}
@@ -438,7 +453,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             <button
               onClick={handleNextScenario}
               className="cat-btn cat-btn-primary"
-              style={{ marginTop: '0.5rem' }}
+              style={{ marginTop: '0.5rem', minHeight: '48px' }}
             >
               Continue to Next Module
             </button>

@@ -119,3 +119,20 @@ npm install
 npm run dev
 ```
 Open `http://127.0.0.1:5173/` in your browser.
+
+---
+
+## 🎨 UI/UX Design System Overhaul (Before & After)
+
+An end-to-end design system pass was applied across the application to establish an authentic **In-Cab Industrial HUD** experience for operators while retaining a clean, executive control center for supervisors:
+
+| Aspect | Before | After |
+| :--- | :--- | :--- |
+| **Theme Consistency** | Generic white SaaS admin cards across both tabs with a black top bar slapped on top. | **Full In-Cab Dark Industrial HUD** (`#0D0D0E`, `#18181B`, `#FFCD11`) for Operators; sleek executive slate for Supervisors with smooth CSS theme switching. |
+| **Hierarchy & Elevation** | Box-inside-a-box clutter (task card > scheduled window sub-box > weather sub-box > duration sub-box). | **Single elevation card hierarchy**. Inside cards, spacing, dividers (`cat-meta-row`), and distinct typography weights organize data without nested borders. |
+| **Status & Badge System** | Arbitrary badge colors (green/blue/purple for fleet custody tags, confusing them with danger alerts). | **Strict semantic color system**: Red (Critical/Escalated), Amber (Warning/In-Progress), Green (Safe/Completed/Nominal), and Neutral Slate (Custody: Owned, Rented In, Rented Out). |
+| **Alert Triage Scannability** | 3+ near-identical red alert cards competing for supervisor attention. | **Strong visual state per severity**: Escalated/Active alerts pulse with loud glowing red borders; acknowledged/resolved alerts visually collapse into compact receded rows. |
+| **Voice Assistant Co-Pilot** | Static mic icon with minimal visual feedback when listening. | **Active animated waveform bars** (`.voice-waveform`) and glowing listening state. Emergency SOS button isolated with **1.5s hold-to-trigger protection** against accidental cabin bumps. |
+| **Data Tables & KPIs** | Thin left border on Ghost Idle rows; left-aligned numeric data; plain KPI numbers. | **Subtle full-row tint** on Ghost Idle rows, **right-aligned numeric columns** with monospace tabular numbers (`.mono-num`), and KPI trend delta indicators. |
+| **Modals & Responsive Reflow** | White modals jarring in cabin night mode; multi-column breaks on mobile. | **Themed in-cab dialogs** (Emergency SOS, Operator Simulator) with high-contrast tactile touch targets and mobile-responsive reflow. |
+

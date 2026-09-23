@@ -36,46 +36,56 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
 
   const getWeatherIcon = (weather: string) => {
     const w = weather.toLowerCase();
-    if (w.includes('rain')) return <CloudRain size={16} color="#60A5FA" />;
-    if (w.includes('wind')) return <Wind size={16} color="#FBBF24" />;
-    return <Sun size={16} color="#FFCD11" />;
+    if (w.includes('rain')) return <CloudRain size={15} color="#60A5FA" />;
+    if (w.includes('wind')) return <Wind size={15} color="#FBBF24" />;
+    return <Sun size={15} color="#FFCD11" />;
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'in-progress':
-        return <span className="cat-badge badge-yellow">● {status.toUpperCase()}</span>;
+        return <span className="cat-badge badge-warning">● IN-PROGRESS</span>;
       case 'done':
-        return <span className="cat-badge badge-green">✓ {status.toUpperCase()}</span>;
+        return <span className="cat-badge badge-success">✓ COMPLETED</span>;
       case 'delayed':
-        return <span className="cat-badge badge-red">⚠ {status.toUpperCase()}</span>;
+        return <span className="cat-badge badge-danger">⚠ DELAYED</span>;
       default:
-        return <span className="cat-badge badge-blue">⏱ {status.toUpperCase()}</span>;
+        return <span className="cat-badge badge-custody">⏱ UPCOMING</span>;
     }
   };
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+      {/* Header bar */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.25rem',
+        borderBottom: '1px solid var(--theme-divider)',
+        paddingBottom: '0.75rem',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
         <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--theme-text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: 'var(--cat-yellow-subtle)', color: 'var(--cat-yellow)', padding: '0.35rem', borderRadius: '6px', display: 'inline-flex' }}>
               <Clock size={18} />
             </div>
             {t('todaysTasks')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
-            Cabin local time: <strong style={{ color: '#0F172A' }}>{operatorTimezone}</strong>
+          <p style={{ fontSize: '0.82rem', color: 'var(--theme-text-secondary)', marginTop: '2px' }}>
+            Cabin local time: <strong style={{ color: 'var(--theme-text-primary)' }}>{operatorTimezone}</strong>
           </p>
         </div>
-        <div style={{ fontSize: '0.85rem', color: '#64748B', fontWeight: 500 }}>
-          <strong style={{ color: '#0F172A' }}>{tasks.length}</strong> tasks assigned
+        <div style={{ fontSize: '0.82rem', color: 'var(--theme-text-secondary)', fontWeight: 600 }}>
+          <strong style={{ color: 'var(--theme-text-primary)' }}>{tasks.length}</strong> tasks assigned today
         </div>
       </div>
 
       {tasks.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2.5rem', color: '#64748B' }}>
-          <AlertTriangle size={32} color="#D97706" style={{ margin: '0 auto 0.75rem' }} />
+        <div style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--theme-text-muted)' }}>
+          <AlertTriangle size={32} color="var(--cat-yellow)" style={{ margin: '0 auto 0.75rem' }} />
           <p>{t('noTasks')}</p>
         </div>
       ) : (
@@ -83,42 +93,58 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
           {tasks.map(task => {
             const hasVariance = task.predicted_time_min && task.estimated_time_min && (task.predicted_time_min !== task.estimated_time_min);
             const variance = hasVariance ? Math.round(task.predicted_time_min! - task.estimated_time_min!) : 0;
+            const isInProgress = task.status === 'in-progress';
+            const isDone = task.status === 'done';
 
             return (
               <div
                 key={task.task_id}
+                className="task-item-card"
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: 'var(--theme-card-bg-elevated)',
                   borderRadius: '10px',
-                  borderTop: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
-                  borderRight: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
-                  borderBottom: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
-                  borderLeft: task.status === 'in-progress' ? '4px solid #FFCD11' : '1px solid #E2E8F0',
+                  border: isInProgress
+                    ? '1px solid var(--cat-yellow)'
+                    : '1px solid var(--theme-card-border)',
+                  borderLeft: isInProgress
+                    ? '4px solid var(--cat-yellow)'
+                    : isDone
+                      ? '4px solid var(--cat-success)'
+                      : '4px solid var(--theme-card-border)',
                   padding: '1.25rem',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.75rem',
-                  boxShadow: task.status === 'in-progress' ? '0 4px 12px rgba(255, 205, 17, 0.15)' : '0 1px 3px rgba(0, 0, 0, 0.04)'
+                  boxShadow: isInProgress ? '0 4px 16px var(--cat-yellow-glow)' : 'none'
                 }}
               >
-                {/* Header row */}
+                {/* Header row: Title, ID, Machine, Zone, Status */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--theme-text-primary)' }}>
                         {task.task_type}
                       </span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#92400E', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '1px 6px', borderRadius: '4px' }}>
+                      <span style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: 'var(--cat-yellow)',
+                        backgroundColor: '#111111',
+                        border: '1px solid #333333',
+                        padding: '1px 7px',
+                        borderRadius: '4px'
+                      }}>
                         {task.task_id}
                       </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '4px', fontSize: '0.85rem', color: '#64748B' }}>
-                      <strong style={{ backgroundColor: '#18181B', color: '#FFCD11', padding: '1px 6px', borderRadius: '4px', fontSize: '0.78rem' }}>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '4px', fontSize: '0.85rem', flexWrap: 'wrap' }}>
+                      <span className="cat-badge badge-cat-brand" style={{ fontSize: '0.75rem' }}>
                         {task.machine_model || task.machine_id}
-                      </strong>
-                      <span>&bull;</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#475569', fontWeight: 500 }}>
-                        <MapPin size={14} color="#D97706" />
+                      </span>
+                      <span style={{ color: 'var(--theme-text-muted)' }}>&bull;</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--theme-text-secondary)', fontWeight: 500 }}>
+                        <MapPin size={14} color="var(--cat-yellow)" />
                         {task.location_zone}
                       </span>
                     </div>
@@ -127,57 +153,57 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                   <div>{getStatusBadge(task.status)}</div>
                 </div>
 
-                {/* Details grid */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '0.75rem',
-                  backgroundColor: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '8px',
-                  fontSize: '0.85rem'
-                }}>
+                {/* Clean Metadata Section (NO nested bordered boxes, uses spacing & dividers) */}
+                <div className="cat-meta-row">
                   {/* Local Time Window */}
-                  <div>
-                    <div style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                      {t('scheduledWindow')}
-                    </div>
-                    <div style={{ fontWeight: 600, color: '#0F172A', marginTop: '3px' }}>
+                  <div className="cat-meta-item">
+                    <span className="cat-meta-label">{t('scheduledWindow')}</span>
+                    <span className="cat-meta-value mono-num">
                       {formatUtcToLocal(task.scheduled_start, operatorTimezone)}
-                    </div>
+                    </span>
                   </div>
 
                   {/* Weather */}
-                  <div>
-                    <div style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                      {t('weather')}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#0F172A', marginTop: '3px' }}>
+                  <div className="cat-meta-item">
+                    <span className="cat-meta-label">{t('weather')}</span>
+                    <span className="cat-meta-value">
                       {getWeatherIcon(task.weather)}
                       <span>{task.weather}</span>
-                    </div>
+                    </span>
                   </div>
 
                   {/* ML Predicted Duration */}
-                  <div>
-                    <div style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Cpu size={13} color="#D97706" />
+                  <div className="cat-meta-item">
+                    <span className="cat-meta-label" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Cpu size={12} color="var(--cat-yellow)" />
                       <span>{t('predictedDuration')}</span>
-                    </div>
-                    <div style={{ fontWeight: 700, color: '#0F172A', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    </span>
+                    <div className="cat-meta-value mono-num" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                       <span>{task.predicted_time_min ? `${task.predicted_time_min} min` : `${task.estimated_time_min || 45} min`}</span>
                       {hasVariance && variance !== 0 && (
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: variance > 0 ? '#DC2626' : '#059669' }}>
-                          ({variance > 0 ? `+${variance}m weather/wear` : `${variance}m`})
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          color: variance > 0 ? 'var(--cat-danger)' : 'var(--cat-success)'
+                        }}>
+                          ({variance > 0 ? `+${variance}m` : `${variance}m`})
                         </span>
                       )}
                     </div>
                   </div>
                 </div>
 
+                {/* Dispatch Notes */}
                 {task.notes && (
-                  <div style={{ fontSize: '0.85rem', color: '#451A03', fontStyle: 'italic', backgroundColor: '#FFFBEB', borderLeft: '3px solid #F59E0B', border: '1px solid #FEF3C7', padding: '0.5rem 0.75rem', borderRadius: '6px' }}>
+                  <div style={{
+                    fontSize: '0.82rem',
+                    color: 'var(--theme-text-secondary)',
+                    fontStyle: 'italic',
+                    backgroundColor: 'var(--theme-subtle-bg)',
+                    borderLeft: '3px solid var(--cat-yellow)',
+                    padding: '0.45rem 0.75rem',
+                    borderRadius: '4px'
+                  }}>
                     "{task.notes}"
                   </div>
                 )}
@@ -190,7 +216,7 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                       className="cat-btn cat-btn-primary"
                       style={{ flex: 1 }}
                     >
-                      <Play size={16} />
+                      <Play size={18} />
                       {t('startTask')}
                     </button>
                   )}
@@ -201,17 +227,17 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                         const actual = prompt("Enter actual completion duration in minutes:", String(task.predicted_time_min || 45));
                         onUpdateStatus(task.task_id, 'done', actual ? parseFloat(actual) : undefined);
                       }}
-                      className="cat-btn"
-                      style={{ flex: 1, backgroundColor: '#059669', borderColor: '#047857', color: '#FFF' }}
+                      className="cat-btn cat-btn-success"
+                      style={{ flex: 1 }}
                     >
-                      <CheckCircle size={16} />
+                      <CheckCircle size={18} />
                       {t('completeTask')}
                     </button>
                   )}
 
                   {task.status === 'done' && (
-                    <div style={{ color: '#059669', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0' }}>
-                      <CheckCircle size={16} /> Task Completed. {task.actual_time_min ? `Actual duration: ${task.actual_time_min} min` : ''}
+                    <div style={{ color: 'var(--cat-success)', fontSize: '0.875rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0' }}>
+                      <CheckCircle size={18} /> Task Completed. {task.actual_time_min ? `Actual duration: ${task.actual_time_min} min` : ''}
                     </div>
                   )}
                 </div>
