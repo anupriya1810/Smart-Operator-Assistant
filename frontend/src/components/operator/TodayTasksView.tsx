@@ -90,7 +90,9 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderRadius: '10px',
-                  border: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
+                  borderTop: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
+                  borderRight: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
+                  borderBottom: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
                   borderLeft: task.status === 'in-progress' ? '4px solid #FFCD11' : '1px solid #E2E8F0',
                   padding: '1.25rem',
                   display: 'flex',

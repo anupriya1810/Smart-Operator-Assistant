@@ -77,7 +77,9 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderRadius: '8px',
-                  border: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
+                  borderTop: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
+                  borderRight: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
+                  borderBottom: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
                   borderLeft: isCritical ? '4px solid #DC2626' : '4px solid #10B981',
                   boxShadow: isCritical ? '0 2px 8px rgba(220, 38, 38, 0.08)' : '0 1px 2px rgba(0, 0, 0, 0.03)',
                   padding: '1rem',

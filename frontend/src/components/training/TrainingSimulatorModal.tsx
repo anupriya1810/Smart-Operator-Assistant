@@ -149,7 +149,9 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
         {/* Scenario Situation Card */}
         <div style={{
           backgroundColor: '#F8FAFC',
-          border: '1px solid #E2E8F0',
+          borderTop: '1px solid #E2E8F0',
+          borderRight: '1px solid #E2E8F0',
+          borderBottom: '1px solid #E2E8F0',
           borderLeft: '4px solid #FFCD11',
           padding: '1rem 1.25rem',
           borderRadius: '10px'

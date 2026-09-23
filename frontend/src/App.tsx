@@ -233,7 +233,9 @@ export function App() {
             {/* Cabin HUD Machine & Shift Banner */}
             <div style={{
               backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
+              borderTop: '1px solid #E2E8F0',
+              borderRight: '1px solid #E2E8F0',
+              borderBottom: '1px solid #E2E8F0',
               borderLeft: '4px solid #FFCD11',
               boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
               borderRadius: '12px',
