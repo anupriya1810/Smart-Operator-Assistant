@@ -35,16 +35,16 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #111111', paddingBottom: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111111', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '0.2rem 0.4rem', borderRadius: '4px', display: 'inline-flex' }}>
-              <ShieldAlert size={20} />
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+              <ShieldAlert size={18} />
             </div>
             {t('safetyMonitor')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '2px' }}>
-            Real-time telemetry & in-cab SOS escalation log.
+          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
+            Real-time telemetry &amp; in-cab SOS escalation log.
           </p>
         </div>
 
@@ -56,14 +56,14 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
           ) : (
             <span className="cat-badge badge-green">✓ ALL CABINS NOMINAL</span>
           )}
-          <button onClick={onRefresh} className="cat-btn cat-btn-secondary" style={{ minHeight: '36px', padding: '0.2rem 0.6rem', fontSize: '0.75rem' }}>
+          <button onClick={onRefresh} className="cat-btn cat-btn-outline" style={{ minHeight: '34px', padding: '0.2rem 0.65rem', fontSize: '0.78rem' }}>
             {t('refresh')}
           </button>
         </div>
       </div>
 
       {alerts.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: '#4B5563' }}>
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#64748B', fontSize: '0.9rem' }}>
           No safety alerts logged.
         </div>
       ) : (
@@ -77,8 +77,9 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderRadius: '8px',
-                  border: isCritical ? '2.5px solid #DC2626' : '2px solid #111111',
-                  boxShadow: isCritical ? '3px 3px 0px #DC2626' : '2px 2px 0px #111111',
+                  border: isCritical ? '1px solid #FECACA' : '1px solid #E2E8F0',
+                  borderLeft: isCritical ? '4px solid #DC2626' : '4px solid #10B981',
+                  boxShadow: isCritical ? '0 2px 8px rgba(220, 38, 38, 0.08)' : '0 1px 2px rgba(0, 0, 0, 0.03)',
                   padding: '1rem',
                   display: 'flex',
                   flexDirection: 'column',
@@ -88,16 +89,16 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontWeight: 900, color: isCritical ? '#DC2626' : '#111111', fontSize: '1.05rem' }}>
+                      <span style={{ fontWeight: 700, color: isCritical ? '#DC2626' : '#0F172A', fontSize: '1rem' }}>
                         {a.alert_type}
                       </span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111111', backgroundColor: '#FFCD11', border: '1px solid #111111', padding: '2px 6px', borderRadius: '4px' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#92400E', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '1px 6px', borderRadius: '4px' }}>
                         {a.alert_id}
                       </span>
                     </div>
 
-                    <div style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '2px' }}>
-                      Machine: <strong style={{ color: '#111111' }}>{a.machine_id}</strong> | Operator: <strong style={{ color: '#111111' }}>{a.operator_name || a.operator_id}</strong>
+                    <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '3px' }}>
+                      Machine: <strong style={{ color: '#0F172A' }}>{a.machine_id}</strong> &bull; Operator: <strong style={{ color: '#0F172A' }}>{a.operator_name || a.operator_id}</strong>
                     </div>
                   </div>
 
@@ -120,9 +121,9 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#6B7280', borderTop: '1px solid #E5E7EB', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
-                  <span>Triggered: <strong>{formatUtcToLocal(a.triggered_at, supervisorTimezone)}</strong></span>
-                  {a.notes && <span style={{ color: '#111111', fontStyle: 'italic' }}>"{a.notes}"</span>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#64748B', borderTop: '1px solid #F1F5F9', paddingTop: '0.45rem', marginTop: '0.2rem' }}>
+                  <span>Triggered: <strong style={{ color: '#334155' }}>{formatUtcToLocal(a.triggered_at, supervisorTimezone)}</strong></span>
+                  {a.notes && <span style={{ color: '#475569', fontStyle: 'italic' }}>"{a.notes}"</span>}
                 </div>
               </div>
             );

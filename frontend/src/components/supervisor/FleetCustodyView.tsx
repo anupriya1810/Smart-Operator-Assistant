@@ -74,20 +74,20 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #111111', paddingBottom: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111111', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '0.2rem 0.4rem', borderRadius: '4px', display: 'inline-flex' }}>
-              <Truck size={20} />
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+              <Truck size={18} />
             </div>
             {t('fleetView')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '2px' }}>
-            Multi-custody asset tracking: Owned equipment, rented-in contractor units & rented-out fleet.
+          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
+            Multi-custody asset tracking: Owned equipment, rented-in contractor units &amp; rented-out fleet.
           </p>
         </div>
-        <div style={{ fontSize: '0.85rem', color: '#111111', fontWeight: 700 }}>
-          <strong>{machines.length}</strong> Total Machines
+        <div style={{ fontSize: '0.85rem', color: '#64748B', fontWeight: 500 }}>
+          <strong style={{ color: '#0F172A' }}>{machines.length}</strong> Total Machines
         </div>
       </div>
 
@@ -98,8 +98,8 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '10px',
-              border: '2px solid #111111',
-              boxShadow: '3px 3px 0px #111111',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
               padding: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
@@ -109,21 +109,21 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.8rem', color: '#111111', fontWeight: 800, backgroundColor: '#FFCD11', border: '1px solid #111111', padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.78rem', color: '#92400E', fontWeight: 600, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '2px 8px', borderRadius: '4px' }}>
                   {m.machine_id}
                 </span>
                 {getCustodyBadge(m.custody_status)}
               </div>
 
-              <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#111111', marginTop: '0.5rem' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', marginTop: '0.5rem' }}>
                 {m.model}
               </div>
-              <div style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '2px' }}>
-                Category: <strong style={{ color: '#111111' }}>{m.type}</strong> | Machine Age: <strong style={{ color: '#111111' }}>{m.age_years} yrs</strong>
+              <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
+                Category: <strong style={{ color: '#0F172A' }}>{m.type}</strong> &bull; Age: <strong style={{ color: '#0F172A' }}>{m.age_years} yrs</strong>
               </div>
 
               {m.current_operator_name && (
-                <div style={{ fontSize: '0.85rem', color: '#065F46', fontWeight: 700, marginTop: '0.4rem', backgroundColor: '#D1FAE5', padding: '2px 6px', borderRadius: '4px', display: 'inline-block' }}>
+                <div style={{ fontSize: '0.78rem', color: '#065F46', fontWeight: 600, marginTop: '0.5rem', backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '4px', display: 'inline-block' }}>
                   Active Operator: <strong>{m.current_operator_name}</strong>
                 </div>
               )}
@@ -132,21 +132,21 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
             {/* Rental Details */}
             {m.custody_status !== 'owned' && (
               <div style={{
-                backgroundColor: '#FFFBEB',
-                padding: '0.6rem 0.75rem',
+                backgroundColor: '#F8FAFC',
+                padding: '0.65rem 0.75rem',
                 borderRadius: '6px',
-                fontSize: '0.85rem',
-                border: '1.5px solid #111111',
-                color: '#111111'
+                fontSize: '0.8rem',
+                border: '1px solid #E2E8F0',
+                color: '#334155'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#111111', fontWeight: 700 }}>
-                  <Building size={14} color="#D97706" />
-                  <span><strong>Counterparty:</strong> {m.rental_counterparty || 'N/A'}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#0F172A', fontWeight: 600 }}>
+                  <Building size={13} color="#D97706" />
+                  <span>Counterparty: {m.rental_counterparty || 'N/A'}</span>
                 </div>
                 {m.rental_start && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#4B5563', marginTop: '3px' }}>
-                    <Calendar size={14} color="#111111" />
-                    <span>Period: {formatUtcToLocal(m.rental_start, supervisorTimezone).split(',')[0]} - {formatUtcToLocal(m.rental_end, supervisorTimezone).split(',')[0]}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#64748B', marginTop: '3px' }}>
+                    <Calendar size={13} color="#64748B" />
+                    <span>Period: {formatUtcToLocal(m.rental_start, supervisorTimezone).split(',')[0]} &ndash; {formatUtcToLocal(m.rental_end, supervisorTimezone).split(',')[0]}</span>
                   </div>
                 )}
               </div>
@@ -155,9 +155,9 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
             <button
               onClick={() => openRentalModal(m)}
               className="cat-btn cat-btn-secondary"
-              style={{ minHeight: '42px', fontSize: '0.85rem', padding: '0.4rem 0.75rem' }}
+              style={{ minHeight: '38px', fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
             >
-              <ArrowRightLeft size={16} />
+              <ArrowRightLeft size={14} />
               Manage Custody / Rental
             </button>
           </div>
@@ -172,33 +172,33 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
           left: 0,
           width: '100vw',
           height: '100vh',
-          backgroundColor: 'rgba(0,0,0,0.6)',
+          backgroundColor: 'rgba(15, 23, 42, 0.5)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
           padding: '1rem',
-          backdropFilter: 'blur(3px)'
+          backdropFilter: 'blur(6px)'
         }}>
           <div style={{
             backgroundColor: '#FFFFFF',
-            border: '3px solid #111111',
-            boxShadow: '6px 6px 0px #111111',
-            borderRadius: '12px',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+            borderRadius: '16px',
             padding: '1.75rem',
             width: '100%',
             maxWidth: '480px',
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
-            color: '#111111'
+            color: '#0F172A'
           }}>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111111', borderBottom: '2px solid #111111', paddingBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem' }}>
               Manage Custody: {selectedMachine.model} ({selectedMachine.machine_id})
             </h3>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '0.3rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
                 Custody Status:
               </label>
               <select
@@ -215,7 +215,7 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
             {custodyStatus !== 'owned' && (
               <>
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '0.3rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
                     Counterparty Company:
                   </label>
                   <input
@@ -229,7 +229,7 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '0.3rem' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
                       Start Date:
                     </label>
                     <input
@@ -240,7 +240,7 @@ export const FleetCustodyView: React.FC<FleetCustodyViewProps> = ({
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '0.3rem' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
                       End Date:
                     </label>
                     <input

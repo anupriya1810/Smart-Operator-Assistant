@@ -98,14 +98,14 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
         className="cat-emergency-pulse"
         style={{
           width: '100%',
-          maxWidth: '540px',
+          maxWidth: '520px',
           backgroundColor: '#FFFFFF',
           borderRadius: '16px',
-          border: '4px solid #DC2626',
-          boxShadow: '8px 8px 0px #111111',
+          border: '1px solid #FECACA',
+          boxShadow: '0 25px 50px -12px rgba(220, 38, 38, 0.25)',
           padding: '2rem',
           textAlign: 'center',
-          color: '#111111',
+          color: '#0F172A',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -113,52 +113,48 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
         }}
       >
         <div style={{
-          backgroundColor: '#DC2626',
-          color: '#FFF',
+          backgroundColor: '#FEE2E2',
+          color: '#DC2626',
           padding: '1rem',
           borderRadius: '50%',
-          display: 'inline-flex',
-          border: '2px solid #111111'
+          display: 'inline-flex'
         }}>
-          <AlertOctagon size={48} />
+          <AlertOctagon size={42} />
         </div>
 
         <div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#DC2626', letterSpacing: '0.05em' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#DC2626' }}>
             {t('safetyAlert')}
           </h2>
-          <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111111', marginTop: '0.5rem' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', marginTop: '0.4rem' }}>
             {activeAlert.alert_type}
           </div>
-          <div style={{ fontSize: '0.9rem', color: '#4B5563', marginTop: '0.25rem' }}>
-            Machine: <strong style={{ color: '#111111', backgroundColor: '#FFCD11', padding: '1px 6px', borderRadius: '4px' }}>{activeAlert.machine_id}</strong> | Operator: <strong>{activeAlert.operator_id}</strong>
+          <div style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '0.35rem' }}>
+            Machine: <strong style={{ color: '#0F172A', backgroundColor: '#FEF3C7', padding: '1px 6px', borderRadius: '4px' }}>{activeAlert.machine_id}</strong> &bull; Operator: <strong>{activeAlert.operator_id}</strong>
           </div>
         </div>
 
         {/* Countdown Timer */}
         {!isEscalated ? (
           <div style={{
-            backgroundColor: '#FFFBEB',
-            border: '2px solid #111111',
-            boxShadow: '3px 3px 0px #111111',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid #E2E8F0',
             borderRadius: '12px',
             padding: '1rem 2rem',
             width: '100%'
           }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               {t('timeRemaining')}
             </div>
-            <div style={{ fontSize: '3.2rem', fontWeight: 900, color: secondsRemaining <= 15 ? '#DC2626' : '#111111' }}>
+            <div style={{ fontSize: '2.8rem', fontWeight: 800, color: secondsRemaining <= 15 ? '#DC2626' : '#0F172A', margin: '0.2rem 0' }}>
               {secondsRemaining}s
             </div>
             <div style={{
               width: '100%',
-              backgroundColor: '#E5E7EB',
-              height: '10px',
-              borderRadius: '5px',
-              border: '1px solid #111111',
-              overflow: 'hidden',
-              marginTop: '0.5rem'
+              backgroundColor: '#E2E8F0',
+              height: '8px',
+              borderRadius: '9999px',
+              overflow: 'hidden'
             }}>
               <div style={{
                 height: '100%',
@@ -170,20 +166,19 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
           </div>
         ) : (
           <div style={{
-            backgroundColor: '#FEE2E2',
-            border: '2px solid #DC2626',
-            boxShadow: '3px 3px 0px #111111',
+            backgroundColor: '#FEF2F2',
+            border: '1px solid #FECACA',
             borderRadius: '12px',
             padding: '1.25rem',
             width: '100%',
             color: '#991B1B'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: 900, fontSize: '1.15rem' }}>
-              <BellRing size={24} color="#DC2626" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.05rem' }}>
+              <BellRing size={20} color="#DC2626" />
               <span>{t('escalatedNotice')}</span>
             </div>
-            <p style={{ fontSize: '0.85rem', marginTop: '0.4rem', color: '#111111', fontWeight: 600 }}>
-              Pluggable dispatch: In-app supervisor alarm triggered. SMS & Email dispatch stubs queued.
+            <p style={{ fontSize: '0.85rem', marginTop: '0.35rem', color: '#475569' }}>
+              Pluggable dispatch: In-app supervisor alarm triggered. SMS &amp; Email dispatch stubs queued.
             </p>
           </div>
         )}
@@ -194,15 +189,15 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
             onClick={() => onAcknowledge(activeAlert.alert_id)}
             className="cat-btn"
             style={{
-              minHeight: '64px',
-              fontSize: '1.15rem',
+              minHeight: '56px',
+              fontSize: '1.05rem',
               backgroundColor: '#059669',
-              borderColor: '#111111',
-              boxShadow: '4px 4px 0px #111111',
+              borderColor: '#047857',
+              boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
               color: '#FFF'
             }}
           >
-            <CheckCircle size={26} />
+            <CheckCircle size={22} />
             {t('acknowledgeSafe')}
           </button>
 
@@ -213,9 +208,9 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
                 onEscalate(activeAlert.alert_id);
               }}
               className="cat-btn cat-btn-outline"
-              style={{ minHeight: '44px', fontSize: '0.85rem', color: '#DC2626', borderColor: '#DC2626' }}
+              style={{ minHeight: '40px', fontSize: '0.82rem', color: '#DC2626', borderColor: '#FECACA' }}
             >
-              <PhoneCall size={16} />
+              <PhoneCall size={15} />
               Manual Immediate Escalation to Supervisor
             </button>
           )}
@@ -225,9 +220,9 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#4B5563',
+              color: '#64748B',
               fontSize: '0.85rem',
-              fontWeight: 600,
+              fontWeight: 500,
               cursor: 'pointer',
               marginTop: '0.25rem'
             }}

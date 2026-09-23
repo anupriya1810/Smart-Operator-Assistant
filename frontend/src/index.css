@@ -1,19 +1,33 @@
 :root {
   --cat-yellow: #FFCD11;
-  --cat-yellow-hover: #E5B80F;
+  --cat-yellow-hover: #F0BC00;
+  --cat-yellow-dark: #B48300;
   --cat-yellow-subtle: #FFFBEB;
-  --cat-black: #111111;
+  --cat-yellow-border: #FDE68A;
+  --cat-black: #18181B;
+  --cat-gray-900: #0F172A;
+  --cat-gray-800: #1E293B;
+  --cat-gray-700: #334155;
+  --cat-gray-600: #475569;
+  --cat-gray-500: #64748B;
+  --cat-gray-400: #94A3B8;
+  --cat-gray-300: #CBD5E1;
+  --cat-gray-200: #E2E8F0;
+  --cat-gray-100: #F1F5F9;
+  --cat-gray-50: #F8FAFC;
   --cat-white: #FFFFFF;
   --cat-card-bg: #FFFFFF;
-  --cat-card-surface: #F9FAFB;
-  --cat-border: #111111;
-  --cat-border-light: #E5E7EB;
-  --cat-text: #111111;
-  --cat-text-muted: #4B5563;
+  --cat-border: #E2E8F0;
+  --cat-border-hover: #CBD5E1;
+  --cat-text: #0F172A;
+  --cat-text-muted: #64748B;
   --cat-hazard-red: #DC2626;
   --cat-hazard-amber: #D97706;
   --cat-hazard-green: #059669;
   --cat-hazard-blue: #2563EB;
+  --cat-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --cat-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --cat-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
 }
 
 * {
@@ -25,218 +39,227 @@
 }
 
 body {
-  background-color: var(--cat-white);
+  background-color: var(--cat-gray-50);
   color: var(--cat-text);
   min-height: 100vh;
   overflow-x: hidden;
-  user-select: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F3F4F6;
+  background: var(--cat-gray-100);
 }
 ::-webkit-scrollbar-thumb {
-  background: #111111;
-  border-radius: 4px;
+  background: var(--cat-gray-300);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--cat-yellow);
+  background: var(--cat-gray-400);
 }
 
-/* Touch Targets for In-Cab Gloved Use */
+/* Professional Industrial Action Buttons */
 .cat-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 52px;
-  padding: 0.75rem 1.5rem;
+  min-height: 44px;
+  padding: 0.65rem 1.25rem;
   border-radius: 8px;
-  font-weight: 800;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  font-size: 0.925rem;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
-  border: 2px solid #111111;
+  border: 1px solid transparent;
+  text-decoration: none;
 }
 
 .cat-btn:active {
-  transform: scale(0.98);
+  transform: translateY(1px);
 }
 
 .cat-btn-primary {
   background-color: var(--cat-yellow);
-  color: #111111;
-  border-color: #111111;
-  box-shadow: 2px 2px 0px #111111;
+  color: #18181B;
+  border-color: #E5B80F;
+  box-shadow: var(--cat-shadow-sm);
+  font-weight: 700;
 }
 .cat-btn-primary:hover {
   background-color: var(--cat-yellow-hover);
-  box-shadow: 3px 3px 0px #111111;
+  box-shadow: 0 4px 10px rgba(255, 205, 17, 0.35);
 }
 
 .cat-btn-secondary {
-  background-color: #111111;
-  color: var(--cat-yellow);
-  border-color: #111111;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  background-color: #18181B;
+  color: #FFFFFF;
+  border-color: #27272A;
+  box-shadow: var(--cat-shadow-sm);
 }
 .cat-btn-secondary:hover {
-  background-color: #262626;
-  color: #FFF;
+  background-color: #27272A;
+  box-shadow: var(--cat-shadow-md);
 }
 
 .cat-btn-outline {
   background-color: #FFFFFF;
-  color: #111111;
-  border-color: #111111;
-  box-shadow: 2px 2px 0px #111111;
+  color: var(--cat-gray-800);
+  border-color: var(--cat-gray-300);
+  box-shadow: var(--cat-shadow-sm);
 }
 .cat-btn-outline:hover {
-  background-color: var(--cat-yellow);
+  background-color: var(--cat-gray-50);
+  border-color: var(--cat-gray-400);
 }
 
 .cat-btn-danger {
   background-color: var(--cat-hazard-red);
   color: #FFFFFF;
-  border-color: #111111;
-  box-shadow: 2px 2px 0px #111111;
+  border-color: #B91C1C;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
 }
 .cat-btn-danger:hover {
   background-color: #B91C1C;
-  box-shadow: 3px 3px 0px #111111;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
 }
 
-/* Industrial High-Contrast Card */
+/* Professional Industrial Card */
 .cat-card {
   background-color: var(--cat-card-bg);
-  border: 2px solid var(--cat-border);
+  border: 1px solid var(--cat-border);
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 1.5rem;
   position: relative;
-  overflow: hidden;
-  box-shadow: 3px 3px 0px rgba(17, 17, 17, 0.9);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cat-card:hover {
+  border-color: var(--cat-border-hover);
 }
 
 .cat-card-accent {
-  border-left: 8px solid var(--cat-yellow);
+  border-left: 4px solid var(--cat-yellow);
 }
 
+/* Refined Pill Badges */
 .cat-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1.5px solid #111111;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
 }
 
 .badge-yellow {
-  background: var(--cat-yellow);
-  color: #111111;
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
 }
 
 .badge-black {
-  background: #111111;
+  background: #18181B;
   color: var(--cat-yellow);
+  border-color: #27272A;
 }
 
 .badge-blue {
-  background: #DBEAFE;
+  background: #EFF6FF;
   color: #1E40AF;
-  border-color: #1E40AF;
+  border-color: #BFDBFE;
 }
 
 .badge-green {
-  background: #D1FAE5;
+  background: #ECFDF5;
   color: #065F46;
-  border-color: #065F46;
+  border-color: #A7F3D0;
 }
 
 .badge-purple {
-  background: #F3E8FF;
+  background: #FAF5FF;
   color: #6B21A8;
-  border-color: #6B21A8;
+  border-color: #E9D5FF;
 }
 
 .badge-red {
-  background: #FEE2E2;
+  background: #FEF2F2;
   color: #991B1B;
-  border-color: #991B1B;
+  border-color: #FECACA;
 }
 
 /* Flashing Emergency Animation */
 @keyframes emergencyFlash {
   0%, 100% {
-    background-color: #FEE2E2;
+    background-color: #FFFFFF;
     border-color: #DC2626;
-    box-shadow: 0 0 25px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.25);
   }
   50% {
-    background-color: #FFFFFF;
-    border-color: #111111;
-    box-shadow: none;
+    background-color: #FEF2F2;
+    border-color: #B91C1C;
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.45);
   }
 }
 
 .cat-emergency-pulse {
-  animation: emergencyFlash 1.2s infinite ease-in-out;
+  animation: emergencyFlash 1.6s infinite ease-in-out;
 }
 
 /* Pulse Glow for Microphone */
 @keyframes micPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 205, 17, 0.8);
+    box-shadow: 0 0 0 0 rgba(255, 205, 17, 0.7);
   }
   50% {
-    box-shadow: 0 0 0 16px rgba(255, 205, 17, 0);
+    box-shadow: 0 0 0 12px rgba(255, 205, 17, 0);
   }
 }
 
 .cat-mic-active {
   animation: micPulse 1.4s infinite;
   background-color: var(--cat-yellow) !important;
-  color: #111111 !important;
-  border-color: #111111 !important;
+  color: #18181B !important;
+  border-color: #D97706 !important;
 }
 
 /* Grid & Responsive Breakpoints */
 .cat-grid-dashboard {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .cat-grid-dashboard {
     grid-template-columns: 3fr 2fr;
   }
 }
 
+/* Professional Form Inputs */
 .cat-input {
   width: 100%;
-  min-height: 48px;
+  min-height: 44px;
   background: #FFFFFF;
-  border: 2px solid #111111;
+  border: 1px solid var(--cat-gray-300);
   border-radius: 8px;
-  color: #111111;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  font-weight: 600;
+  color: var(--cat-gray-900);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
 }
 
 .cat-input:focus {
   outline: none;
-  border-color: #111111;
-  box-shadow: 0 0 0 3px var(--cat-yellow);
+  border-color: #EAB308;
+  box-shadow: 0 0 0 3px rgba(255, 205, 17, 0.3);
 }

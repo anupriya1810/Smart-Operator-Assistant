@@ -42,54 +42,54 @@ export const VoiceControlPanel: React.FC<VoiceControlPanelProps> = ({
 
   return (
     <div className="cat-card cat-card-accent">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '2px solid #111111', paddingBottom: '0.6rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.65rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '0.2rem 0.4rem', borderRadius: '4px', display: 'inline-flex' }}>
-            <Volume2 size={20} />
+          <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+            <Volume2 size={18} />
           </div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#111111' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A' }}>
             {t('voiceAssistant')}
           </h3>
         </div>
-        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#065F46', backgroundColor: '#D1FAE5', border: '1px solid #065F46', padding: '2px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#059669' }}></span>
+        <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#065F46', backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#059669' }}></span>
           CABIN RADIO ACTIVE
         </span>
       </div>
 
       {/* Main Microphone Button */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', padding: '1rem 0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0' }}>
         <button
           onClick={toggleListening}
           className={`cat-btn ${isListening ? 'cat-mic-active' : 'cat-btn-primary'}`}
           style={{
-            minHeight: '64px',
+            minHeight: '56px',
             width: '100%',
             maxWidth: '380px',
-            fontSize: '1.1rem',
+            fontSize: '1rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.75rem',
-            borderRadius: '12px'
+            borderRadius: '10px'
           }}
         >
           {isListening ? (
             <>
-              <MicOff size={24} />
+              <MicOff size={20} />
               <span>{t('voiceListening')}</span>
             </>
           ) : (
             <>
-              <Mic size={24} />
+              <Mic size={20} />
               <span>{t('voiceReady')}</span>
             </>
           )}
         </button>
 
         {!isSupported && (
-          <p style={{ fontSize: '0.75rem', color: '#DC2626', fontWeight: 600 }}>
-            Note: Browser speech recognition requires Chrome/Edge or click the shortcut triggers below.
+          <p style={{ fontSize: '0.75rem', color: '#DC2626', fontWeight: 500 }}>
+            Note: Speech recognition requires Chrome/Edge, or click the simulation shortcuts below.
           </p>
         )}
       </div>
@@ -97,26 +97,25 @@ export const VoiceControlPanel: React.FC<VoiceControlPanelProps> = ({
       {/* Transcript & Radio Audio Feedback */}
       {(transcript || lastFeedback) && (
         <div style={{
-          backgroundColor: '#FFFBEB',
-          border: '2px solid #111111',
-          boxShadow: '2px 2px 0px #111111',
+          backgroundColor: '#F8FAFC',
+          border: '1px solid #E2E8F0',
           borderRadius: '8px',
           padding: '0.85rem',
           margin: '0.5rem 0',
           display: 'flex',
           flexDirection: 'column',
           gap: '0.5rem',
-          fontSize: '0.9rem'
+          fontSize: '0.875rem'
         }}>
           {transcript && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#111111' }}>
-              <Mic size={16} color="#D97706" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0F172A' }}>
+              <Mic size={15} color="#D97706" />
               <span><strong>Heard:</strong> "{transcript}"</span>
             </div>
           )}
           {lastFeedback && (
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#111111' }}>
-              <Volume2 size={16} color="#111111" style={{ marginTop: '3px' }} />
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#334155' }}>
+              <Volume2 size={15} color="#475569" style={{ marginTop: '3px' }} />
               <span><strong>CAT Response:</strong> {lastFeedback}</span>
             </div>
           )}
@@ -125,34 +124,34 @@ export const VoiceControlPanel: React.FC<VoiceControlPanelProps> = ({
 
       {/* Quick 1-Tap Voice Trigger Shortcuts (Hands-free simulator) */}
       <div style={{ marginTop: '0.75rem' }}>
-        <div style={{ fontSize: '0.75rem', color: '#111111', fontWeight: 800, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Gloved 1-Tap Voice Simulation:
+        <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+          Gloved 1-Tap Simulation Shortcuts:
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
           <button
             onClick={() => triggerManualCommand("What's my next task?")}
             className="cat-btn cat-btn-outline"
-            style={{ minHeight: '40px', fontSize: '0.8rem', padding: '0.4rem 0.8rem', flex: '1 1 auto' }}
+            style={{ minHeight: '36px', fontSize: '0.78rem', padding: '0.35rem 0.75rem', flex: '1 1 auto' }}
           >
-            <FileText size={14} />
+            <FileText size={13} />
             "What's my next task?"
           </button>
 
           <button
             onClick={() => triggerManualCommand("Log hydraulic leak on left boom")}
             className="cat-btn cat-btn-outline"
-            style={{ minHeight: '40px', fontSize: '0.8rem', padding: '0.4rem 0.8rem', flex: '1 1 auto' }}
+            style={{ minHeight: '36px', fontSize: '0.78rem', padding: '0.35rem 0.75rem', flex: '1 1 auto' }}
           >
-            <CheckCircle2 size={14} />
+            <CheckCircle2 size={13} />
             "Log hydraulic leak on left boom"
           </button>
 
           <button
             onClick={() => triggerManualCommand("Emergency SOS")}
             className="cat-btn cat-btn-danger"
-            style={{ minHeight: '40px', fontSize: '0.8rem', padding: '0.4rem 0.8rem', flex: '1 1 auto' }}
+            style={{ minHeight: '36px', fontSize: '0.78rem', padding: '0.35rem 0.75rem', flex: '1 1 auto' }}
           >
-            <ShieldAlert size={14} />
+            <ShieldAlert size={13} />
             "Emergency SOS"
           </button>
         </div>

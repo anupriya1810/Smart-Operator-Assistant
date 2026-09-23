@@ -112,28 +112,28 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
     }}>
       <div style={{
         backgroundColor: '#FFFFFF',
-        border: '3px solid #111111',
-        boxShadow: '6px 6px 0px #111111',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
         borderRadius: '16px',
         padding: '1.75rem',
         width: '100%',
         maxWidth: '560px',
         maxHeight: '90vh',
         overflowY: 'auto',
-        color: '#111111',
+        color: '#0F172A',
         display: 'flex',
         flexDirection: 'column',
         gap: '1.25rem'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #111111', paddingBottom: '0.75rem' }}>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#111111', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '0.2rem 0.4rem', borderRadius: '4px', display: 'inline-flex' }}>
-              <Calendar size={20} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+              <Calendar size={18} />
             </div>
             {t('scheduleTask')}
           </h2>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#111111', cursor: 'pointer' }}>
-            <X size={24} />
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer' }}>
+            <X size={20} />
           </button>
         </div>
 
@@ -141,7 +141,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Operator and Machine */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Assign Operator:
               </label>
               <select value={operatorId} onChange={(e) => setOperatorId(e.target.value)} className="cat-input">
@@ -154,7 +154,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Assign Machine:
               </label>
               <select value={machineId} onChange={(e) => setMachineId(e.target.value)} className="cat-input">
@@ -170,7 +170,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Task Type and Weather */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Task Type:
               </label>
               <select value={taskType} onChange={(e) => setTaskType(e.target.value)} className="cat-input">
@@ -183,7 +183,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Site Weather:
               </label>
               <select value={weather} onChange={(e) => setWeather(e.target.value)} className="cat-input">
@@ -198,7 +198,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Location and Baseline Estimate */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Location Zone:
               </label>
               <input
@@ -212,7 +212,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Est. Min:
               </label>
               <input
@@ -229,7 +229,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {/* Local Datetime Inputs (Automatically converted to UTC on submit) */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Scheduled Start (Local):
               </label>
               <input
@@ -242,7 +242,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
                 Scheduled End (Local):
               </label>
               <input
@@ -259,31 +259,30 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
           {predictedResult && (
             <div style={{
               backgroundColor: '#FFFBEB',
-              border: '2px solid #111111',
-              boxShadow: '2px 2px 0px #111111',
+              border: '1px solid #FDE68A',
               borderRadius: '8px',
-              padding: '0.85rem',
+              padding: '0.85rem 1rem',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.35rem'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#111111', fontSize: '0.85rem', fontWeight: 800 }}>
-                  <Cpu size={18} color="#D97706" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#92400E', fontSize: '0.85rem', fontWeight: 600 }}>
+                  <Cpu size={16} color="#D97706" />
                   <span>AI Dynamic Duration Predictor:</span>
                 </div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111111' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#92400E' }}>
                   {predictedResult.predicted_time_min} min
                 </div>
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#4B5563', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.8rem', color: '#78350F' }}>
                 {predictedResult.explanation}
               </div>
             </div>
           )}
 
           <div>
-            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px' }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>
               Notes / Instructions for In-Cab HUD:
             </label>
             <input
@@ -302,7 +301,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
               className="cat-btn cat-btn-primary"
               style={{ flex: 1 }}
             >
-              <Check size={18} />
+              <Check size={16} />
               {isSubmitting ? 'Scheduling...' : 'Confirm & Dispatch to Cab'}
             </button>
             <button

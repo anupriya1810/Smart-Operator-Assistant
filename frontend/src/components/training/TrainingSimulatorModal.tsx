@@ -87,21 +87,21 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '720px',
+        maxWidth: '700px',
         maxHeight: '90vh',
         overflowY: 'auto',
         backgroundColor: '#FFFFFF',
         borderRadius: '16px',
-        border: '3px solid #111111',
-        boxShadow: '6px 6px 0px #111111',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
         padding: '1.75rem',
-        color: '#111111',
+        color: '#0F172A',
         display: 'flex',
         flexDirection: 'column',
         gap: '1.25rem'
       }}>
         {/* Top Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #111111', paddingBottom: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span className="cat-badge badge-yellow">{t('scenarioSimulator')}</span>
@@ -109,16 +109,16 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                 <span className="cat-badge badge-blue">★ Telemetry Recommended</span>
               )}
             </div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#111111', marginTop: '0.4rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginTop: '0.4rem' }}>
               {currentScenario?.title}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#111111', cursor: 'pointer', padding: '0.25rem' }}
+            style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', padding: '0.25rem' }}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
@@ -127,14 +127,14 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: '#FFFBEB',
+          backgroundColor: '#F8FAFC',
           padding: '0.75rem 1rem',
-          borderRadius: '8px',
-          border: '2px solid #111111'
+          borderRadius: '10px',
+          border: '1px solid #E2E8F0'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#111111', fontWeight: 800 }}>
-            <Award size={22} color="#D97706" />
-            <span>Score: {operatorProgress.points} pts</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0F172A', fontWeight: 600 }}>
+            <Award size={20} color="#D97706" />
+            <span>Score: <strong style={{ color: '#D97706' }}>{operatorProgress.points}</strong> pts</span>
           </div>
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -148,38 +148,38 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
 
         {/* Scenario Situation Card */}
         <div style={{
-          backgroundColor: '#F9FAFB',
-          border: '2px solid #111111',
-          borderLeft: '8px solid #FFCD11',
-          padding: '1rem',
-          borderRadius: '8px'
+          backgroundColor: '#F8FAFC',
+          border: '1px solid #E2E8F0',
+          borderLeft: '4px solid #FFCD11',
+          padding: '1rem 1.25rem',
+          borderRadius: '10px'
         }}>
           <div style={{
             display: 'flex',
-            gap: '1rem',
-            marginBottom: '0.75rem',
-            fontSize: '0.85rem',
-            color: '#4B5563',
+            gap: '0.75rem',
+            marginBottom: '0.5rem',
+            fontSize: '0.8rem',
+            color: '#64748B',
             flexWrap: 'wrap'
           }}>
-            <span><strong>Task:</strong> {currentScenario?.task_type}</span>
-            <span>•</span>
-            <span><strong>Weather:</strong> {currentScenario?.weather}</span>
-            <span>•</span>
-            <span><strong>Machine Age:</strong> {currentScenario?.machine_age_yrs} yrs</span>
-            <span>•</span>
-            <span><strong>Difficulty:</strong> {currentScenario?.difficulty}</span>
+            <span>Task: <strong style={{ color: '#334155' }}>{currentScenario?.task_type}</strong></span>
+            <span>&bull;</span>
+            <span>Weather: <strong style={{ color: '#334155' }}>{currentScenario?.weather}</strong></span>
+            <span>&bull;</span>
+            <span>Machine Age: <strong style={{ color: '#334155' }}>{currentScenario?.machine_age_yrs} yrs</strong></span>
+            <span>&bull;</span>
+            <span>Difficulty: <strong style={{ color: '#334155' }}>{currentScenario?.difficulty}</strong></span>
           </div>
 
-          <div style={{ fontSize: '1.05rem', lineHeight: '1.5', color: '#111111', fontWeight: 600 }}>
-            <strong>Active Cabin Condition:</strong> {currentScenario?.active_condition}
+          <div style={{ fontSize: '0.95rem', lineHeight: '1.5', color: '#0F172A', fontWeight: 500 }}>
+            <strong style={{ color: '#0F172A' }}>Active Cabin Condition:</strong> {currentScenario?.active_condition}
           </div>
         </div>
 
         {/* Options */}
         {!result ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ fontSize: '0.85rem', color: '#111111', fontWeight: 800, textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               Select Operator Protocol:
             </div>
 
@@ -189,8 +189,8 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                 onClick={() => setSelectedOptionId(opt.id)}
                 style={{
                   backgroundColor: selectedOptionId === opt.id ? '#FFFBEB' : '#FFFFFF',
-                  border: selectedOptionId === opt.id ? '2.5px solid #111111' : '1.5px solid #111111',
-                  boxShadow: selectedOptionId === opt.id ? '3px 3px 0px #FFCD11' : '1px 1px 0px #111111',
+                  border: selectedOptionId === opt.id ? '1px solid #F59E0B' : '1px solid #E2E8F0',
+                  boxShadow: selectedOptionId === opt.id ? '0 1px 3px rgba(245, 158, 11, 0.15)' : '0 1px 2px rgba(0, 0, 0, 0.03)',
                   borderRadius: '10px',
                   padding: '1rem',
                   cursor: 'pointer',
@@ -201,10 +201,10 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                 }}
               >
                 <div style={{
-                  width: '24px',
-                  height: '24px',
+                  width: '20px',
+                  height: '20px',
                   borderRadius: '50%',
-                  border: '2px solid #111111',
+                  border: selectedOptionId === opt.id ? '2px solid #D97706' : '2px solid #CBD5E1',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -213,10 +213,10 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
                   backgroundColor: selectedOptionId === opt.id ? '#FFCD11' : '#FFFFFF'
                 }}>
                   {selectedOptionId === opt.id && (
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#111111' }} />
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#18181B' }} />
                   )}
                 </div>
-                <div style={{ fontSize: '0.95rem', color: '#111111', fontWeight: 600 }}>
+                <div style={{ fontSize: '0.9rem', color: '#0F172A', fontWeight: 500, lineHeight: '1.4' }}>
                   {opt.text}
                 </div>
               </div>
@@ -227,7 +227,7 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
               onClick={handleSubmit}
               className="cat-btn cat-btn-primary"
               style={{
-                marginTop: '0.75rem',
+                marginTop: '0.5rem',
                 opacity: !selectedOptionId ? 0.5 : 1,
                 cursor: !selectedOptionId ? 'not-allowed' : 'pointer'
               }}
@@ -239,9 +239,9 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
           /* Consequence Result Card */
           <div style={{
             backgroundColor: '#FFFFFF',
-            border: '3px solid',
-            borderColor: result.safety_score >= 80 ? '#059669' : '#DC2626',
-            boxShadow: '4px 4px 0px #111111',
+            border: '1px solid',
+            borderColor: result.safety_score >= 80 ? '#A7F3D0' : '#FECACA',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
             borderRadius: '12px',
             padding: '1.25rem',
             display: 'flex',
@@ -249,57 +249,57 @@ export const TrainingSimulatorModal: React.FC<TrainingSimulatorModalProps> = ({
             gap: '1rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 900, fontSize: '1.2rem', color: result.safety_score >= 80 ? '#065F46' : '#991B1B' }}>
-                {result.safety_score >= 80 ? <CheckCircle size={26} /> : <AlertTriangle size={26} />}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.05rem', color: result.safety_score >= 80 ? '#065F46' : '#991B1B' }}>
+                {result.safety_score >= 80 ? <CheckCircle size={22} /> : <AlertTriangle size={22} />}
                 <span>{result.safety_score >= 80 ? 'Safe & Compliant Protocol' : 'Safety Violation Risk'}</span>
               </div>
-              <div style={{ fontSize: '1rem', color: '#111111', fontWeight: 900, backgroundColor: '#FFCD11', border: '1px solid #111111', padding: '2px 8px', borderRadius: '4px' }}>
+              <div style={{ fontSize: '0.85rem', color: '#92400E', fontWeight: 700, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '2px 8px', borderRadius: '4px' }}>
                 +{result.safety_score + result.efficiency_score} pts
               </div>
             </div>
 
             {/* Score Meters */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div style={{ backgroundColor: '#D1FAE5', border: '1.5px solid #065F46', padding: '0.85rem', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: '#065F46', fontWeight: 700 }}>
-                  <ShieldCheck size={16} color="#065F46" />
+              <div style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '0.85rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#065F46', fontWeight: 600 }}>
+                  <ShieldCheck size={15} color="#065F46" />
                   <span>Safety Impact</span>
                 </div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#065F46' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#065F46' }}>
                   {result.safety_score}%
                 </div>
               </div>
 
-              <div style={{ backgroundColor: '#FFFBEB', border: '1.5px solid #D97706', padding: '0.85rem', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: '#92400E', fontWeight: 700 }}>
-                  <Zap size={16} color="#D97706" />
+              <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', padding: '0.85rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#92400E', fontWeight: 600 }}>
+                  <Zap size={15} color="#D97706" />
                   <span>Efficiency Impact</span>
                 </div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#92400E' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#92400E' }}>
                   {result.efficiency_score}%
                 </div>
               </div>
             </div>
 
-            <div style={{ fontSize: '0.95rem', color: '#111111', lineHeight: '1.5', backgroundColor: '#F9FAFB', border: '1px solid #E5E7EB', padding: '0.85rem', borderRadius: '8px' }}>
-              <strong>Briefing:</strong> {result.feedback}
+            <div style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.5', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.85rem', borderRadius: '8px' }}>
+              <strong style={{ color: '#0F172A' }}>Briefing:</strong> {result.feedback}
             </div>
 
             {result.badge_unlocked && (
               <div style={{
-                backgroundColor: '#FFCD11',
-                border: '2px solid #111111',
-                boxShadow: '2px 2px 0px #111111',
-                padding: '0.85rem',
+                backgroundColor: '#FEF3C7',
+                border: '1px solid #FDE68A',
+                boxShadow: '0 1px 3px rgba(245, 158, 11, 0.15)',
+                padding: '0.85rem 1rem',
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem'
               }}>
-                <Award size={32} color="#111111" />
+                <Award size={28} color="#D97706" />
                 <div>
-                  <div style={{ fontWeight: 900, color: '#111111', fontSize: '0.85rem' }}>NEW BADGE UNLOCKED!</div>
-                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#111111' }}>{result.badge_unlocked}</div>
+                  <div style={{ fontWeight: 700, color: '#92400E', fontSize: '0.78rem' }}>NEW BADGE UNLOCKED!</div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#78350F' }}>{result.badge_unlocked}</div>
                 </div>
               </div>
             )}

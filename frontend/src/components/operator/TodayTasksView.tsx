@@ -56,26 +56,26 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
 
   return (
     <div className="cat-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #111111', paddingBottom: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#111111', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '0.2rem 0.4rem', borderRadius: '4px', display: 'inline-flex' }}>
-              <Clock size={20} />
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}>
+              <Clock size={18} />
             </div>
             {t('todaysTasks')}
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '2px' }}>
-            All times converted to your cabin timezone: <strong style={{ color: '#111111' }}>{operatorTimezone}</strong>
+          <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '2px' }}>
+            Cabin local time: <strong style={{ color: '#0F172A' }}>{operatorTimezone}</strong>
           </p>
         </div>
-        <div style={{ fontSize: '0.85rem', color: '#111111', fontWeight: 700 }}>
-          <strong>{tasks.length}</strong> tasks assigned
+        <div style={{ fontSize: '0.85rem', color: '#64748B', fontWeight: 500 }}>
+          <strong style={{ color: '#0F172A' }}>{tasks.length}</strong> tasks assigned
         </div>
       </div>
 
       {tasks.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2.5rem', color: '#4B5563' }}>
-          <AlertTriangle size={36} color="#D97706" style={{ margin: '0 auto 0.75rem' }} />
+        <div style={{ textAlign: 'center', padding: '2.5rem', color: '#64748B' }}>
+          <AlertTriangle size={32} color="#D97706" style={{ margin: '0 auto 0.75rem' }} />
           <p>{t('noTasks')}</p>
         </div>
       ) : (
@@ -90,32 +90,33 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderRadius: '10px',
-                  border: task.status === 'in-progress' ? '3px solid #FFCD11' : '2px solid #111111',
+                  border: task.status === 'in-progress' ? '1px solid #F59E0B' : '1px solid #E2E8F0',
+                  borderLeft: task.status === 'in-progress' ? '4px solid #FFCD11' : '1px solid #E2E8F0',
                   padding: '1.25rem',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.75rem',
-                  boxShadow: task.status === 'in-progress' ? '4px 4px 0px #FFCD11' : '3px 3px 0px #111111'
+                  boxShadow: task.status === 'in-progress' ? '0 4px 12px rgba(255, 205, 17, 0.15)' : '0 1px 3px rgba(0, 0, 0, 0.04)'
                 }}
               >
                 {/* Header row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontWeight: 900, fontSize: '1.2rem', color: '#111111' }}>
+                      <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
                         {task.task_type}
                       </span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111111', backgroundColor: '#FFCD11', border: '1px solid #111111', padding: '2px 6px', borderRadius: '4px' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#92400E', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '1px 6px', borderRadius: '4px' }}>
                         {task.task_id}
                       </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '4px', fontSize: '0.9rem', color: '#111111' }}>
-                      <strong style={{ backgroundColor: '#111111', color: '#FFCD11', padding: '1px 6px', borderRadius: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '4px', fontSize: '0.85rem', color: '#64748B' }}>
+                      <strong style={{ backgroundColor: '#18181B', color: '#FFCD11', padding: '1px 6px', borderRadius: '4px', fontSize: '0.78rem' }}>
                         {task.machine_model || task.machine_id}
                       </strong>
-                      <span style={{ color: '#9CA3AF' }}>|</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#374151', fontWeight: 600 }}>
-                        <MapPin size={15} color="#D97706" />
+                      <span>&bull;</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#475569', fontWeight: 500 }}>
+                        <MapPin size={14} color="#D97706" />
                         {task.location_zone}
                       </span>
                     </div>
@@ -129,28 +130,28 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
                   gap: '0.75rem',
-                  backgroundColor: '#F9FAFB',
-                  border: '1.5px solid #111111',
-                  padding: '0.85rem',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  padding: '0.75rem 1rem',
                   borderRadius: '8px',
                   fontSize: '0.85rem'
                 }}>
                   {/* Local Time Window */}
                   <div>
-                    <div style={{ color: '#4B5563', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                       {t('scheduledWindow')}
                     </div>
-                    <div style={{ fontWeight: 800, color: '#111111', marginTop: '3px' }}>
+                    <div style={{ fontWeight: 600, color: '#0F172A', marginTop: '3px' }}>
                       {formatUtcToLocal(task.scheduled_start, operatorTimezone)}
                     </div>
                   </div>
 
                   {/* Weather */}
                   <div>
-                    <div style={{ color: '#4B5563', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                       {t('weather')}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: '#111111', marginTop: '3px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#0F172A', marginTop: '3px' }}>
                       {getWeatherIcon(task.weather)}
                       <span>{task.weather}</span>
                     </div>
@@ -158,14 +159,14 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
 
                   {/* ML Predicted Duration */}
                   <div>
-                    <div style={{ color: '#4B5563', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Cpu size={14} color="#D97706" />
+                    <div style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Cpu size={13} color="#D97706" />
                       <span>{t('predictedDuration')}</span>
                     </div>
-                    <div style={{ fontWeight: 900, color: '#111111', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <div style={{ fontWeight: 700, color: '#0F172A', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       <span>{task.predicted_time_min ? `${task.predicted_time_min} min` : `${task.estimated_time_min || 45} min`}</span>
                       {hasVariance && variance !== 0 && (
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: variance > 0 ? '#DC2626' : '#059669' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: variance > 0 ? '#DC2626' : '#059669' }}>
                           ({variance > 0 ? `+${variance}m weather/wear` : `${variance}m`})
                         </span>
                       )}
@@ -174,7 +175,7 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                 </div>
 
                 {task.notes && (
-                  <div style={{ fontSize: '0.85rem', color: '#111111', fontStyle: 'italic', backgroundColor: '#FFFBEB', borderLeft: '4px solid #FFCD11', border: '1px solid #FEF3C7', padding: '0.6rem 0.75rem', borderRadius: '4px' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#451A03', fontStyle: 'italic', backgroundColor: '#FFFBEB', borderLeft: '3px solid #F59E0B', border: '1px solid #FEF3C7', padding: '0.5rem 0.75rem', borderRadius: '6px' }}>
                     "{task.notes}"
                   </div>
                 )}
@@ -187,7 +188,7 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                       className="cat-btn cat-btn-primary"
                       style={{ flex: 1 }}
                     >
-                      <Play size={18} />
+                      <Play size={16} />
                       {t('startTask')}
                     </button>
                   )}
@@ -199,16 +200,16 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                         onUpdateStatus(task.task_id, 'done', actual ? parseFloat(actual) : undefined);
                       }}
                       className="cat-btn"
-                      style={{ flex: 1, backgroundColor: '#059669', borderColor: '#111111', color: '#FFF' }}
+                      style={{ flex: 1, backgroundColor: '#059669', borderColor: '#047857', color: '#FFF' }}
                     >
-                      <CheckCircle size={18} />
+                      <CheckCircle size={16} />
                       {t('completeTask')}
                     </button>
                   )}
 
                   {task.status === 'done' && (
-                    <div style={{ color: '#059669', fontSize: '0.9rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0' }}>
-                      <CheckCircle size={18} /> Task Completed. {task.actual_time_min ? `Actual duration: ${task.actual_time_min} min` : ''}
+                    <div style={{ color: '#059669', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0' }}>
+                      <CheckCircle size={16} /> Task Completed. {task.actual_time_min ? `Actual duration: ${task.actual_time_min} min` : ''}
                     </div>
                   )}
                 </div>

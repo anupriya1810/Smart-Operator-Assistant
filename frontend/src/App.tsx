@@ -213,7 +213,7 @@ export function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF', color: '#111111' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F8FAFC', color: '#0F172A' }}>
       {/* Top Bar with Role Switcher & Controls */}
       <Header
         currentRole={role}
@@ -224,7 +224,7 @@ export function App() {
         activeAlertCount={activeAlerts.length}
       />
 
-      <main style={{ flex: 1, padding: '1.25rem', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+      <main style={{ flex: 1, padding: '1.5rem 1.25rem', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
         {/* ========================================================================= */}
         {/* OPERATOR IN-CAB HUD VIEW                                                  */}
         {/* ========================================================================= */}
@@ -233,11 +233,11 @@ export function App() {
             {/* Cabin HUD Machine & Shift Banner */}
             <div style={{
               backgroundColor: '#FFFFFF',
-              border: '2px solid #111111',
-              borderLeft: '10px solid #FFCD11',
-              boxShadow: '4px 4px 0px #111111',
+              border: '1px solid #E2E8F0',
+              borderLeft: '4px solid #FFCD11',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
               borderRadius: '12px',
-              padding: '1.25rem',
+              padding: '1.25rem 1.5rem',
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'space-between',
@@ -245,32 +245,32 @@ export function App() {
               gap: '1rem'
             }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ backgroundColor: '#111111', color: '#FFCD11', padding: '0.25rem 0.5rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <HardHat size={18} />
-                    <span style={{ fontWeight: 900, fontSize: '0.85rem' }}>CABIN HUD</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div style={{ backgroundColor: '#18181B', color: '#FFCD11', padding: '0.25rem 0.5rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <HardHat size={16} />
+                    <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.04em' }}>IN-CAB HUD</span>
                   </div>
-                  <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#111111' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A' }}>
                     Cat 320 Hydraulic Excavator (EXC001)
                   </span>
-                  <span className="cat-badge badge-green">OWNED</span>
+                  <span className="cat-badge badge-green">OWNED ASSET</span>
                 </div>
-                <div style={{ fontSize: '0.9rem', color: '#4B5563', marginTop: '6px' }}>
-                  Operator: <strong style={{ color: '#111111' }}>{currentOperator.name}</strong> ({currentOperator.skill_level}) | Local Timezone: <strong style={{ color: '#111111' }}>{currentOperator.timezone}</strong>
+                <div style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '6px' }}>
+                  Operator: <strong style={{ color: '#0F172A' }}>{currentOperator.name}</strong> ({currentOperator.skill_level}) &bull; Shift Timezone: <strong style={{ color: '#0F172A' }}>{currentOperator.timezone}</strong>
                 </div>
               </div>
 
-              {/* High-Impact In-Cab Action Buttons */}
+              {/* In-Cab Action Buttons */}
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => setShowTrainingModal(true)}
                   className="cat-btn cat-btn-secondary"
-                  style={{ minHeight: '48px', fontSize: '0.9rem' }}
+                  style={{ minHeight: '44px', fontSize: '0.875rem' }}
                 >
-                  <GraduationCap size={18} color="#FFCD11" />
+                  <GraduationCap size={16} color="#FFCD11" />
                   {t('trainingHub')}
                   {trainingData?.operator_progress && (
-                    <span style={{ backgroundColor: '#FFCD11', color: '#111', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>
+                    <span style={{ backgroundColor: '#FFCD11', color: '#18181B', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, marginLeft: '4px' }}>
                       {trainingData.operator_progress.points} pts
                     </span>
                   )}
@@ -279,42 +279,42 @@ export function App() {
                 <button
                   onClick={() => handleTriggerSos('Manual Operator SOS Press')}
                   className="cat-btn cat-btn-danger"
-                  style={{ minHeight: '48px', fontSize: '0.95rem', padding: '0.5rem 1.25rem' }}
+                  style={{ minHeight: '44px', fontSize: '0.875rem', padding: '0.5rem 1.25rem' }}
                 >
-                  <AlertOctagon size={20} />
+                  <AlertOctagon size={18} />
                   {t('sosEmergency')}
                 </button>
               </div>
             </div>
 
-            {/* Quick Cabin Hazard Simulation Triggers (For testing requirement) */}
+            {/* Safety Simulation Triggers banner */}
             <div style={{
               backgroundColor: '#FFFBEB',
-              border: '2px solid #111111',
+              border: '1px solid #FDE68A',
               borderRadius: '8px',
               padding: '0.75rem 1rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
-              gap: '0.5rem',
+              gap: '0.75rem',
               fontSize: '0.85rem'
             }}>
-              <span style={{ color: '#111111', fontWeight: 800 }}>
-                ⚡ Safety Simulation Triggers:
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#92400E', fontWeight: 600 }}>
+                <span>⚡ Safety Simulator Triggers:</span>
+              </div>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => handleTriggerSos('Seatbelt Unfastened while Engine Engaged')}
                   className="cat-btn cat-btn-outline"
-                  style={{ minHeight: '36px', fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
+                  style={{ minHeight: '34px', fontSize: '0.78rem', padding: '0.25rem 0.65rem' }}
                 >
                   Simulate Seatbelt Alert
                 </button>
                 <button
                   onClick={() => handleTriggerSos('Proximity Hazard: Ground Crew Detected < 2m')}
                   className="cat-btn cat-btn-outline"
-                  style={{ minHeight: '36px', fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
+                  style={{ minHeight: '34px', fontSize: '0.78rem', padding: '0.25rem 0.65rem' }}
                 >
                   Simulate Proximity Hazard
                 </button>
@@ -341,21 +341,21 @@ export function App() {
                 {trainingData && (
                   <div className="cat-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, color: '#111111' }}>
-                        <GraduationCap size={20} color="#D97706" />
-                        <span>Daily Simulation Recommendation</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: '#0F172A', fontSize: '0.95rem' }}>
+                        <GraduationCap size={18} color="#D97706" />
+                        <span>Daily Scenario Recommendation</span>
                       </div>
                       <span className="cat-badge badge-black">Score: {trainingData.operator_progress.points}</span>
                     </div>
 
-                    <p style={{ fontSize: '0.9rem', color: '#374151', marginBottom: '0.75rem' }}>
-                      Recommended: <strong style={{ color: '#111111' }}>{trainingData.scenarios.find(s => s.id === trainingData.recommended_scenario_id)?.title || 'Cabin Safety Protocol'}</strong>
+                    <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '1rem', lineHeight: '1.4' }}>
+                      Suggested scenario: <strong style={{ color: '#0F172A' }}>{trainingData.scenarios.find(s => s.id === trainingData.recommended_scenario_id)?.title || 'Cabin Safety Protocol'}</strong>
                     </p>
 
                     <button
                       onClick={() => setShowTrainingModal(true)}
                       className="cat-btn cat-btn-primary"
-                      style={{ width: '100%', minHeight: '46px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', minHeight: '42px', fontSize: '0.875rem' }}
                     >
                       Launch 2D Decision Simulator
                     </button>
@@ -374,10 +374,10 @@ export function App() {
             {/* Top Supervisor Controls & Metrics */}
             <div style={{
               backgroundColor: '#FFFFFF',
-              border: '2px solid #111111',
-              boxShadow: '4px 4px 0px #111111',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
               borderRadius: '12px',
-              padding: '1.25rem',
+              padding: '1.25rem 1.5rem',
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'space-between',
@@ -385,11 +385,11 @@ export function App() {
               gap: '1rem'
             }}>
               <div>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#111111' }}>
-                  Marcus Vance — Site Operations Hub
+                <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#0F172A' }}>
+                  Marcus Vance &mdash; Site Operations Hub
                 </h1>
-                <p style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '4px' }}>
-                  Managing <strong>{machines.length}</strong> machines across <strong>{operators.length}</strong> operators. Storage in UTC, local view: <strong>America/New_York</strong>.
+                <p style={{ fontSize: '0.875rem', color: '#64748B', marginTop: '4px' }}>
+                  Managing <strong>{machines.length}</strong> machines across <strong>{operators.length}</strong> operators &bull; Coordinated UTC storage, viewing in <strong>America/New_York</strong>.
                 </p>
               </div>
 
@@ -397,18 +397,18 @@ export function App() {
                 <button
                   onClick={() => setShowSchedulerModal(true)}
                   className="cat-btn cat-btn-primary"
-                  style={{ minHeight: '48px', fontSize: '0.9rem' }}
+                  style={{ minHeight: '44px', fontSize: '0.875rem' }}
                 >
-                  <PlusCircle size={18} />
+                  <PlusCircle size={16} />
                   {t('scheduleTask')}
                 </button>
 
                 <button
                   onClick={fetchData}
-                  className="cat-btn cat-btn-secondary"
-                  style={{ minHeight: '48px', fontSize: '0.9rem' }}
+                  className="cat-btn cat-btn-outline"
+                  style={{ minHeight: '44px', fontSize: '0.875rem' }}
                 >
-                  <RefreshCw size={18} />
+                  <RefreshCw size={16} />
                   {t('refresh')}
                 </button>
               </div>
