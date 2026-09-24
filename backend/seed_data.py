@@ -15,7 +15,7 @@ def seed():
 
     # 1. Supervisors
     cursor.execute("""
-    INSERT INTO supervisors (supervisor_id, name, email, phone, timezone)
+    INSERT OR IGNORE INTO supervisors (supervisor_id, name, email, phone, timezone)
     VALUES ('SUP001', 'Marcus Vance', 'marcus.vance@cat-operations.com', '+1-555-0199', 'America/New_York');
     """)
 
