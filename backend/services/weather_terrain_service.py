@@ -36,10 +36,14 @@ _MEMORY_WEATHER_CACHE: Dict[str, Dict[str, float]] = {}
 _MEMORY_TERRAIN_CACHE: Dict[str, Dict[str, Any]] = {}
 
 def get_db_conn():
-    """Get SQLite database connection for persistent caching."""
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    """Get database connection for persistent caching."""
+    try:
+        from database import get_db_connection
+        return get_db_connection()
+    except Exception:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        return conn
 
 def get_cached_weather(cache_key: str) -> Dict[str, float]:
     """Retrieve cached weather from memory or database."""

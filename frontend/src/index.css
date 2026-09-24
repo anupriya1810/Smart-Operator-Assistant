@@ -79,24 +79,24 @@
 /* THEME MODE: OPERATOR IN-CAB HUD (Full Dark Industrial Treatment)          */
 /* ========================================================================= */
 .cat-theme-operator {
-  --theme-bg: #0D0D0E;
-  --theme-card-bg: #18181B;
-  --theme-card-bg-elevated: #202024;
-  --theme-card-border: #2A2A2E;
-  --theme-card-border-hover: #3A3A40;
-  --theme-divider: #26262A;
-  --theme-text-primary: #F8FAFC;
-  --theme-text-secondary: #94A3B8;
-  --theme-text-muted: #64748B;
-  --theme-subtle-bg: #131316;
-  --theme-subtle-border: #222226;
-  --theme-input-bg: #121214;
-  --theme-input-border: #2E2E33;
-  --theme-kpi-bg: #1B1B1F;
-  --theme-kpi-border: #2C2C32;
-  --theme-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --theme-banner-bg: #141416;
-  --theme-banner-border: #26262B;
+ --theme-bg: #F4F6F9;
+  --theme-card-bg: #FFFFFF;
+  --theme-card-bg-elevated: #F8FAFC;
+  --theme-card-border: #E2E8F0;
+  --theme-card-border-hover: #CBD5E1;
+  --theme-divider: #E2E8F0;
+  --theme-text-primary: #0F172A;
+  --theme-text-secondary: #475569;
+  --theme-text-muted: #94A3B8;
+  --theme-subtle-bg: #F8FAFC;
+  --theme-subtle-border: #E2E8F0;
+  --theme-input-bg: #FFFFFF;
+  --theme-input-border: #CBD5E1;
+  --theme-kpi-bg: #FFFFFF;
+  --theme-kpi-border: #E2E8F0;
+  --theme-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --theme-banner-bg: #FFFFFF;
+  --theme-banner-border: #E2E8F0;
 }
 
 /* ========================================================================= */

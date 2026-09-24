@@ -6,8 +6,19 @@ import uuid
 from pathlib import Path
 import json
 import math
+from fastapi.middleware.cors import CORSMiddleware
 
-from database import get_db_connection, init_db
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://smartoperatorassistant.vercel.app/"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+from database import get_db_connection, init_db, get_active_db_engine
 from models import (
     SupervisorResponse, OperatorResponse, OperatorProfileUpdate,
     MachineResponse, RentalUpdateRequest,
@@ -90,7 +101,7 @@ def health_check():
         "status": "healthy",
         "service": "CAT Co-Pilot Backend",
         "server_time_utc": datetime.now(timezone.utc).isoformat(),
-        "database": "sqlite3",
+        "database": get_active_db_engine(),
         "ml_engine": "active"
     }
 

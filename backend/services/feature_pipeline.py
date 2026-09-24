@@ -71,9 +71,13 @@ NUMERICAL_FEATURES = [
 ]
 
 def get_db_conn():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        from database import get_db_connection
+        return get_db_connection()
+    except Exception:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        return conn
 
 def compute_machine_health_score(machine_age_yrs: float, lifetime_engine_hours: float, days_since_last_maint: float, status: str) -> float:
     """

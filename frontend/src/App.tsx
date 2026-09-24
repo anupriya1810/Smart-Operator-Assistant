@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import './i18n/translations';
 
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = 'http://smart-operator-assistant.onrender.com';
 
 export function App() {
   const { t } = useTranslation();
