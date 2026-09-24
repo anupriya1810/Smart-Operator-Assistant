@@ -76,7 +76,7 @@ export function App() {
   // Fetch all initial data
   const fetchData = async () => {
     try {
-      const [opsRes, machRes, tasksRes, alertsRes, anomRes, trainRes, buddyRes, proxRes, threshRes, dutyOpRes] = await Promise.all([
+      const results = await Promise.allSettled([
         fetch(`${API_BASE}/api/operators`),
         fetch(`${API_BASE}/api/machines`),
         fetch(`${API_BASE}/api/tasks`),
@@ -88,13 +88,15 @@ export function App() {
         fetch(`${API_BASE}/api/supervisor/thresholds`),
         fetch(`${API_BASE}/api/operators/${activeOperatorId}/duty-cycle`),
       ]);
+      const responses = results.map(result => result.status === 'fulfilled' ? result.value : null);
+      const [opsRes, machRes, tasksRes, alertsRes, anomRes, trainRes, buddyRes, proxRes, threshRes, dutyOpRes] = responses;
 
-      if (opsRes.ok) setOperators(await opsRes.json());
-      if (machRes.ok) setMachines(await machRes.json());
-      if (tasksRes.ok) setTasks(await tasksRes.json());
-      if (alertsRes.ok) setAlerts(await alertsRes.json());
-      if (anomRes.ok) setAnomalies(await anomRes.json());
-      if (trainRes.ok) setTrainingData(await trainRes.json());
+      if (opsRes?.ok) setOperators(await opsRes.json());
+      if (machRes?.ok) setMachines(await machRes.json());
+      if (tasksRes?.ok) setTasks(await tasksRes.json());
+      if (alertsRes?.ok) setAlerts(await alertsRes.json());
+      if (anomRes?.ok) setAnomalies(await anomRes.json());
+      if (trainRes?.ok) setTrainingData(await trainRes.json());
       if (buddyRes && buddyRes.ok) {
         const bData = await buddyRes.json();
         setBuddyAlerts(bData);

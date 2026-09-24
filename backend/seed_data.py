@@ -6,8 +6,8 @@ def seed():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Check if already seeded
-    cursor.execute("SELECT COUNT(*) FROM supervisors;")
+    # Check if the core demo entities are already seeded
+    cursor.execute("SELECT COUNT(*) FROM operators;")
     if cursor.fetchone()[0] > 0:
         print("Database already contains records. Skipping seed.")
         conn.close()
