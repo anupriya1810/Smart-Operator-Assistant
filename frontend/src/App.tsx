@@ -113,12 +113,14 @@ export function App() {
     fetchData();
   }, [activeOperatorId]);
 
+  const WS_BASE = API_BASE.replace(/^http/, 'ws');
+
   // Real-time WebSocket connection for live safety alert notifications & escalation
   useEffect(() => {
     let ws: WebSocket | null = null;
     const connectWs = () => {
       try {
-        ws = new WebSocket('ws://smart-operator-assistant.onrender.com/ws/alerts');
+        ws = new WebSocket(`${WS_BASE}/ws/alerts`);
         ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);

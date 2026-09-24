@@ -6,17 +6,6 @@ import uuid
 from pathlib import Path
 import json
 import math
-from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://smartoperatorassistant.vercel.app/"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 from database import get_db_connection, init_db, get_active_db_engine
 from models import (
@@ -45,6 +34,35 @@ from services.auth_service import auth_service
 from services.weather_terrain_service import fetch_weather, fetch_terrain
 from training_data import SCENARIOS, OPERATOR_PROGRESS
 
+app = FastAPI(
+    title="CAT Co-Pilot API",
+    description="Multi-role In-Cab Smart Operator Assistant Platform API",
+    version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://smartoperatorassistant.vercel.app",
+        "http://localhost:3000",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "service": "CAT Co-Pilot Backend",
+        "server_time_utc": datetime.now(timezone.utc).isoformat(),
+        "database": get_active_db_engine(),
+        "ml_engine": "active"
+    }
+
+
 # Ensure database tables exist
 init_db()
 
@@ -65,21 +83,6 @@ def load_runtime_thresholds():
 
 load_runtime_thresholds()
 
-app = FastAPI(
-    title="CAT Co-Pilot API",
-    description="Multi-role In-Cab Smart Operator Assistant Platform API",
-    version="1.0.0"
-)
-
-# CORS setup for frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # --- WebSocket for Real-time Cabin & Supervisor Alerts ---
 @app.websocket("/ws/alerts")
 async def websocket_alerts_endpoint(websocket: WebSocket):
@@ -93,17 +96,6 @@ async def websocket_alerts_endpoint(websocket: WebSocket):
         notification_service.ws_channel.disconnect(websocket)
     except Exception:
         notification_service.ws_channel.disconnect(websocket)
-
-# --- Health Check ---
-@app.get("/api/health")
-def health_check():
-    return {
-        "status": "healthy",
-        "service": "CAT Co-Pilot Backend",
-        "server_time_utc": datetime.now(timezone.utc).isoformat(),
-        "database": get_active_db_engine(),
-        "ml_engine": "active"
-    }
 
 # --- Supervisors & Operators ---
 @app.get("/api/supervisors", response_model=List[SupervisorResponse])
