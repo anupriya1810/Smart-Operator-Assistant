@@ -33,6 +33,7 @@ from services.ml_prediction_service import predict_task_duration, recalibrate_mo
 from services.auth_service import auth_service
 from services.weather_terrain_service import fetch_weather, fetch_terrain
 from training_data import SCENARIOS, OPERATOR_PROGRESS
+from seed_data import seed as seed_demo_data
 
 app = FastAPI(
     title="CAT Co-Pilot API",
@@ -65,6 +66,11 @@ def health_check():
 
 # Ensure database tables exist
 init_db()
+
+try:
+    seed_demo_data()
+except Exception as e:
+    print(f"[Seed Init Notice] {e}")
 
 def load_runtime_thresholds():
     try:
