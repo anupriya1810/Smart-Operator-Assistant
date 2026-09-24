@@ -118,7 +118,7 @@ export function App() {
     let ws: WebSocket | null = null;
     const connectWs = () => {
       try {
-        ws = new WebSocket('ws://127.0.0.1:8000/ws/alerts');
+        ws = new WebSocket('ws://smart-operator-assistant.onrender.com/ws/alerts');
         ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
