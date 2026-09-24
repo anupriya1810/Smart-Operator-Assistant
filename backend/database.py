@@ -199,6 +199,10 @@ def init_db():
         cursor.execute("ALTER TABLE machines ADD COLUMN is_geofence_breached INTEGER DEFAULT 0;")
     if "last_gps_update" not in machine_cols:
         cursor.execute("ALTER TABLE machines ADD COLUMN last_gps_update TEXT;")
+    if "continuous_operating_hours" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN continuous_operating_hours REAL DEFAULT 2.0;")
+    if "last_cooldown_at" not in machine_cols:
+        cursor.execute("ALTER TABLE machines ADD COLUMN last_cooldown_at TEXT;")
 
     # Add Weather Re-Approval columns to tasks if not present
     task_cols = [c[1] for c in cursor.execute("PRAGMA table_info(tasks);").fetchall()]
@@ -206,6 +210,15 @@ def init_db():
         cursor.execute("ALTER TABLE tasks ADD COLUMN weather_reapproval_required INTEGER DEFAULT 0;")
     if "weather_approved_by" not in task_cols:
         cursor.execute("ALTER TABLE tasks ADD COLUMN weather_approved_by TEXT;")
+
+    # Add safe migrations for operators table
+    op_cols = [c[1] for c in cursor.execute("PRAGMA table_info(operators);").fetchall()]
+    if "assigned_supervisor_id" not in op_cols:
+        cursor.execute("ALTER TABLE operators ADD COLUMN assigned_supervisor_id TEXT DEFAULT 'SUP001';")
+    if "preferred_language" not in op_cols:
+        cursor.execute("ALTER TABLE operators ADD COLUMN preferred_language TEXT DEFAULT 'en';")
+    if "timezone" not in op_cols:
+        cursor.execute("ALTER TABLE operators ADD COLUMN timezone TEXT DEFAULT 'America/New_York';")
 
     # Seed Default Geofence Zones if empty
     cursor.execute("SELECT COUNT(*) FROM geofence_zones;")
@@ -222,12 +235,34 @@ def init_db():
         VALUES (?, ?, ?, ?, ?, ?, ?);
         """, zones)
 
+    # Ensure LDR001, BLD001, BLD002 exist in machines
+    cursor.execute("""
+    INSERT OR IGNORE INTO machines (
+        machine_id, machine_type, model, machine_age_yrs, purchase_date,
+        last_maintenance_date, lifetime_engine_hours, fuel_tank_capacity_l, status,
+        latitude, longitude, current_zone, authorized_zone
+    ) VALUES
+    ('BLD001', 'Bulldozer', 'Cat D6 Track-Type Tractor', 5, '2021-01-15', '2026-04-10', 4200, 350, 'Active', 40.7139, -74.0062, 'Zone A - Quarry North', 'Zone A - Quarry North'),
+    ('LDR001', 'Wheel Loader', 'Cat 950M Wheel Loader', 3, '2023-03-20', '2026-05-01', 2800, 300, 'Active', 40.7158, -74.0032, 'Zone C - Stockpile Hub', 'Zone C - Stockpile Hub'),
+    ('BLD002', 'Bulldozer', 'Cat D8 Heavy Dozer', 6, '2020-05-10', '2026-03-15', 6500, 450, 'Active', 40.7092, -74.0042, 'Zone D - Old Silo / Demo', 'Zone D - Old Silo / Demo');
+    """)
+
+    # Ensure active operator assignments for LDR001 and BLD001
+    cursor.execute("SELECT COUNT(*) FROM operator_machine_assignments WHERE machine_id = 'BLD001';")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO operator_machine_assignments (operator_id, machine_id, shift_date, is_active) VALUES ('OP1003', 'BLD001', '2026-09-23', 1);")
+
+    cursor.execute("SELECT COUNT(*) FROM operator_machine_assignments WHERE machine_id = 'LDR001';")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO operator_machine_assignments (operator_id, machine_id, shift_date, is_active) VALUES ('OP1002', 'LDR001', '2026-09-23', 1);")
+
     # Seed initial GPS positions for machines
     cursor.execute("""
     UPDATE machines SET
         latitude = 40.7132, longitude = -74.0058, current_zone = 'Zone A - Quarry North',
         authorized_zone = 'Zone A - Quarry North', speed_kmh = 4.5, heading_deg = 45.0,
-        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:30:00Z'
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:30:00Z',
+        continuous_operating_hours = 4.2
     WHERE machine_id = 'EXC001';
     """)
 
@@ -236,7 +271,8 @@ def init_db():
     UPDATE machines SET
         latitude = 40.7182, longitude = -74.0088, current_zone = 'Blast Danger Perimeter (Restricted)',
         authorized_zone = 'Zone B - Utility Pipeline', speed_kmh = 8.1, heading_deg = 320.0,
-        is_geofence_breached = 1, last_gps_update = '2026-09-23T16:31:00Z'
+        is_geofence_breached = 1, last_gps_update = '2026-09-23T16:31:00Z',
+        continuous_operating_hours = 1.8
     WHERE machine_id = 'EXC002';
     """)
 
@@ -244,7 +280,8 @@ def init_db():
     UPDATE machines SET
         latitude = 40.7158, longitude = -74.0032, current_zone = 'Zone C - Stockpile Hub',
         authorized_zone = 'Zone C - Stockpile Hub', speed_kmh = 12.0, heading_deg = 90.0,
-        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:29:00Z'
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:29:00Z',
+        continuous_operating_hours = 2.0
     WHERE machine_id = 'LDR001';
     """)
 
@@ -252,7 +289,8 @@ def init_db():
     UPDATE machines SET
         latitude = 40.7139, longitude = -74.0062, current_zone = 'Zone A - Quarry North',
         authorized_zone = 'Zone A - Quarry North', speed_kmh = 0.0, heading_deg = 0.0,
-        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:28:00Z'
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:28:00Z',
+        continuous_operating_hours = 3.1
     WHERE machine_id = 'BLD001';
     """)
 
@@ -260,7 +298,8 @@ def init_db():
     UPDATE machines SET
         latitude = 40.7092, longitude = -74.0042, current_zone = 'Zone D - Old Silo / Demo',
         authorized_zone = 'Zone D - Old Silo / Demo', speed_kmh = 0.0, heading_deg = 180.0,
-        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:25:00Z'
+        is_geofence_breached = 0, last_gps_update = '2026-09-23T16:25:00Z',
+        continuous_operating_hours = 0.5
     WHERE machine_id = 'BLD002';
     """)
 
@@ -292,6 +331,68 @@ def init_db():
         INSERT INTO machine_gps_traces (machine_id, timestamp, latitude, longitude, speed_kmh, heading_deg, is_anomaly, anomaly_reason)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         """, traces_exc1)
+
+    # 12. Proximity-Based Buddy Failover Alerts Table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS buddy_failover_alerts (
+        failover_id TEXT PRIMARY KEY,
+        alert_id TEXT NOT NULL,
+        distressed_operator_id TEXT NOT NULL,
+        distressed_machine_id TEXT NOT NULL,
+        distressed_zone TEXT NOT NULL,
+        distressed_lat REAL NOT NULL,
+        distressed_lon REAL NOT NULL,
+        buddy_operator_id TEXT NOT NULL,
+        buddy_machine_id TEXT NOT NULL,
+        distance_meters REAL NOT NULL,
+        status TEXT NOT NULL CHECK(status IN ('pending', 'en_route', 'radio_contacted', 'resolved')),
+        dispatched_at TEXT NOT NULL,
+        acknowledged_at TEXT,
+        notes TEXT,
+        FOREIGN KEY (alert_id) REFERENCES safety_alerts (alert_id)
+    );
+    """)
+
+    # 13. Multi-Operator SOS Correlation & Mass Evacuation Table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sos_correlations (
+        correlation_id TEXT PRIMARY KEY,
+        location_zone TEXT NOT NULL,
+        alert_ids TEXT NOT NULL,
+        operator_ids TEXT NOT NULL,
+        machine_ids TEXT NOT NULL,
+        operator_count INTEGER NOT NULL,
+        first_triggered_at TEXT NOT NULL,
+        latest_triggered_at TEXT NOT NULL,
+        status TEXT NOT NULL CHECK(status IN ('active_emergency', 'evacuation_ordered', 'contained', 'resolved')),
+        evacuation_ordered_at TEXT,
+        notes TEXT
+    );
+    """)
+
+    # 14. Supervisor Configurable Thresholds Table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS supervisor_thresholds (
+        id TEXT PRIMARY KEY,
+        idle_limit_min REAL NOT NULL DEFAULT 40.0,
+        sos_timeout_sec INTEGER NOT NULL DEFAULT 45,
+        diesel_cost_per_liter REAL NOT NULL DEFAULT 1.35,
+        idle_burn_rate_l_per_hour REAL NOT NULL DEFAULT 3.6,
+        anomaly_sensitivity TEXT NOT NULL DEFAULT 'standard',
+        duty_cycle_max_hours REAL NOT NULL DEFAULT 4.0,
+        cooldown_period_min INTEGER NOT NULL DEFAULT 15,
+        updated_at TEXT NOT NULL
+    );
+    """)
+
+    cursor.execute("""
+    INSERT OR IGNORE INTO supervisor_thresholds (
+        id, idle_limit_min, sos_timeout_sec, diesel_cost_per_liter, idle_burn_rate_l_per_hour,
+        anomaly_sensitivity, duty_cycle_max_hours, cooldown_period_min, updated_at
+    ) VALUES (
+        'SITE_DEFAULT', 40.0, 45, 1.35, 3.6, 'standard', 4.0, 15, '2026-09-24T00:00:00Z'
+    );
+    """)
 
     conn.commit()
     conn.close()

@@ -99,6 +99,21 @@ class GpsAnomalyReport(BaseModel):
     timestamp: str
     severity: Literal["low", "medium", "high", "critical"]
 
+class GeofenceProximityStatus(BaseModel):
+    machine_id: str
+    machine_model: str
+    operator_id: Optional[str] = None
+    current_zone: str
+    authorized_zone: str
+    speed_kmh: float = 0.0
+    heading_deg: float = 0.0
+    is_geofence_breached: bool = False
+    nearest_restricted_zone_id: Optional[str] = None
+    nearest_restricted_zone_name: Optional[str] = None
+    distance_to_restricted_m: float = 0.0
+    warning_level: Literal["safe", "caution", "critical"] = "safe"
+    warning_message: str
+
 class RentalUpdateRequest(BaseModel):
     custody_status: Literal["owned", "rented_in", "rented_out"]
     rental_counterparty: Optional[str] = None
@@ -172,6 +187,31 @@ class IdleAnomalyReport(BaseModel):
     seatbelt_status: str
     is_ghost_idle: bool
 
+# --- Proximity-Based Buddy Failover Models ---
+class BuddyFailoverResponse(BaseModel):
+    failover_id: str
+    alert_id: str
+    distressed_operator_id: str
+    distressed_operator_name: Optional[str] = None
+    distressed_machine_id: str
+    distressed_machine_model: Optional[str] = None
+    distressed_zone: str
+    distressed_lat: float
+    distressed_lon: float
+    buddy_operator_id: str
+    buddy_operator_name: Optional[str] = None
+    buddy_machine_id: str
+    buddy_machine_model: Optional[str] = None
+    distance_meters: float
+    status: Literal["pending", "en_route", "radio_contacted", "resolved"]
+    dispatched_at: str
+    acknowledged_at: Optional[str] = None
+    notes: Optional[str] = None
+
+class BuddyAlertResponseRequest(BaseModel):
+    status: Literal["en_route", "radio_contacted", "resolved"] = "en_route"
+    notes: Optional[str] = None
+
 # --- Safety Alert Models ---
 class SafetyAlertCreate(BaseModel):
     machine_id: str
@@ -193,6 +233,7 @@ class SafetyAlertResponse(BaseModel):
     status: Literal["active", "acknowledged", "escalated", "resolved"]
     notes: Optional[str] = None
     operator_name: Optional[str] = None
+    buddy_failover: Optional[BuddyFailoverResponse] = None
 
 class AlertAcknowledgeRequest(BaseModel):
     operator_id: str
@@ -246,3 +287,125 @@ class TaskTimePredictResponse(BaseModel):
     explanation: Optional[str] = None
     top_factors: List[FactorImpact]
     engineered_features: Optional[dict] = None
+
+# --- Multi-Operator SOS Correlation & Evacuation Models ---
+class SosCorrelationResponse(BaseModel):
+    correlation_id: str
+    location_zone: str
+    alert_ids: List[str]
+    operator_ids: List[str]
+    operator_names: Optional[List[str]] = None
+    machine_ids: List[str]
+    machine_models: Optional[List[str]] = None
+    operator_count: int
+    first_triggered_at: str
+    latest_triggered_at: str
+    status: Literal["active_emergency", "evacuation_ordered", "contained", "resolved"]
+    evacuation_ordered_at: Optional[str] = None
+    notes: Optional[str] = None
+
+class EvacuationOrderRequest(BaseModel):
+    muster_zone: Optional[str] = "Muster Point Charlie (Highway Access Gate)"
+    notes: Optional[str] = None
+
+# --- Supervisor Configurable Threshold Models ---
+class SupervisorThresholds(BaseModel):
+    id: str = "SITE_DEFAULT"
+    idle_limit_min: float = 40.0
+    sos_timeout_sec: int = 45
+    diesel_cost_per_liter: float = 1.35
+    idle_burn_rate_l_per_hour: float = 3.6
+    anomaly_sensitivity: Literal["low", "standard", "high", "strict"] = "standard"
+    duty_cycle_max_hours: float = 4.0
+    cooldown_period_min: int = 15
+    updated_at: str
+
+class ThresholdsUpdateRequest(BaseModel):
+    idle_limit_min: Optional[float] = None
+    sos_timeout_sec: Optional[int] = None
+    diesel_cost_per_liter: Optional[float] = None
+    idle_burn_rate_l_per_hour: Optional[float] = None
+    anomaly_sensitivity: Optional[Literal["low", "standard", "high", "strict"]] = None
+    duty_cycle_max_hours: Optional[float] = None
+    cooldown_period_min: Optional[int] = None
+
+# --- Machine Duty-Cycle Enforcement & Cooldown Models ---
+class MachineDutyCycleStatus(BaseModel):
+    machine_id: str
+    machine_model: Optional[str] = None
+    operator_id: Optional[str] = None
+    operator_name: Optional[str] = None
+    continuous_engine_hours: float
+    duty_limit_hours: float
+    is_cooldown_required: bool
+    cooldown_duration_min: int
+    cooldown_status: Literal["nominal", "cooldown_recommended", "cooling_down", "cooldown_completed"]
+    cooldown_task_id: Optional[str] = None
+    recommended_action: str
+    last_cooldown_at: Optional[str] = None
+
+class ScheduleCooldownRequest(BaseModel):
+    cooldown_duration_min: Optional[int] = None
+    notes: Optional[str] = None
+
+# --- In-Cab Fatigue & Microsleep Detection Models ---
+class FatigueEventCreate(BaseModel):
+    operator_id: str
+    machine_id: Optional[str] = "EXC001"
+    eye_closure_duration_sec: float = 2.0
+    notes: Optional[str] = None
+
+class FatigueEventResponse(BaseModel):
+    event_id: str
+    alert_id: str
+    operator_id: str
+    operator_name: Optional[str] = None
+    machine_id: str
+    eye_closure_duration_sec: float
+    recorded_at: str
+    status: str
+    notes: Optional[str] = None
+
+# --- Dynamic ML Recalibration Models ---
+class RecalibrateRequest(BaseModel):
+    supervisor_id: Optional[str] = "SUP001"
+    idle_bias_adjustment_pct: Optional[float] = 0.0
+    sensitivity_factor: Optional[float] = 1.0
+    retrain_from_db: Optional[bool] = False
+    reason: Optional[str] = "Supervisor operational threshold realignment"
+
+class RecalibrateResponse(BaseModel):
+    status: str
+    model_version: str
+    baseline_mae: float
+    recalibrated_mae: float
+    mae_lift_pct: float
+    samples_recalibrated: int
+    adjustment_bias_min: float
+    timestamp: str
+    notes: Optional[str] = None
+
+# --- OAuth 2.0 / JWT Authentication Models ---
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+    role: Optional[str] = None
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    role: str
+    user_id: str
+    name: str
+    permissions: List[str]
+    expires_in_sec: int
+
+class UserProfileResponse(BaseModel):
+    user_id: str
+    name: str
+    role: Literal["operator", "supervisor"]
+    email: Optional[str] = None
+    permissions: List[str]
+    assigned_machine_id: Optional[str] = None
+    preferred_language: str = "en"
+    timezone: str = "America/New_York"

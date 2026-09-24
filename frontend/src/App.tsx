@@ -14,7 +14,25 @@ import type { AlertItem } from './components/supervisor/SafetyAlertMonitor';
 import { IdleAnomalyPanel } from './components/supervisor/IdleAnomalyPanel';
 import type { TelemetryAnomaly } from './components/supervisor/IdleAnomalyPanel';
 import { FleetGpsTracker } from './components/supervisor/FleetGpsTracker';
-import { AlertOctagon, GraduationCap, PlusCircle, RefreshCw, HardHat, CloudRain } from 'lucide-react';
+import { BuddyAlertModal } from './components/operator/BuddyAlertModal';
+import type { BuddyFailover } from './components/operator/BuddyAlertModal';
+import { OperatorGeofenceBanner } from './components/operator/OperatorGeofenceBanner';
+import type { GeofenceProximity } from './components/operator/OperatorGeofenceBanner';
+import { ThresholdConfigModal } from './components/supervisor/ThresholdConfigModal';
+import type { SupervisorThresholdsData } from './components/supervisor/ThresholdConfigModal';
+import { DutyCycleBanner } from './components/operator/DutyCycleBanner';
+import type { DutyCycleInfo } from './components/operator/DutyCycleBanner';
+import { FatigueMonitor } from './components/operator/FatigueMonitor';
+import {
+  AlertOctagon,
+  GraduationCap,
+  PlusCircle,
+  RefreshCw,
+  HardHat,
+  CloudRain,
+  Sliders,
+  Sparkles,
+} from 'lucide-react';
 import './i18n/translations';
 
 const API_BASE = 'http://127.0.0.1:8000';
@@ -32,11 +50,22 @@ export function App() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [anomalies, setAnomalies] = useState<TelemetryAnomaly[]>([]);
+  const [thresholds, setThresholds] = useState<SupervisorThresholdsData | null>(null);
+  const [operatorDutyCycle, setOperatorDutyCycle] = useState<DutyCycleInfo | null>(null);
 
-  // Modals
+  // JWT Auth & Recalibration State
+  const [jwtToken, setJwtToken] = useState<string | null>(localStorage.getItem('cat_jwt_token') || null);
+  const [recalibrationNotice, setRecalibrationNotice] = useState<string | null>(null);
+  const [isRecalibrating, setIsRecalibrating] = useState<boolean>(false);
+
+  // Modals & Safety Extensions
   const [activeAlert, setActiveAlert] = useState<any | null>(null);
   const [showTrainingModal, setShowTrainingModal] = useState(false);
   const [showSchedulerModal, setShowSchedulerModal] = useState(false);
+  const [showThresholdModal, setShowThresholdModal] = useState(false);
+  const [showBuddyModal, setShowBuddyModal] = useState(true);
+  const [buddyAlerts, setBuddyAlerts] = useState<BuddyFailover[]>([]);
+  const [proximityStatus, setProximityStatus] = useState<GeofenceProximity | null>(null);
 
   // Training simulator state
   const [trainingData, setTrainingData] = useState<{
@@ -45,17 +74,20 @@ export function App() {
     operator_progress: any;
   } | null>(null);
 
-
   // Fetch all initial data
   const fetchData = async () => {
     try {
-      const [opsRes, machRes, tasksRes, alertsRes, anomRes, trainRes] = await Promise.all([
+      const [opsRes, machRes, tasksRes, alertsRes, anomRes, trainRes, buddyRes, proxRes, threshRes, dutyOpRes] = await Promise.all([
         fetch(`${API_BASE}/api/operators`),
         fetch(`${API_BASE}/api/machines`),
         fetch(`${API_BASE}/api/tasks`),
         fetch(`${API_BASE}/api/alerts`),
         fetch(`${API_BASE}/api/telemetry/anomalies`),
-        fetch(`${API_BASE}/api/training/scenarios?operator_id=${activeOperatorId}`)
+        fetch(`${API_BASE}/api/training/scenarios?operator_id=${activeOperatorId}`),
+        fetch(`${API_BASE}/api/operators/${activeOperatorId}/buddy-alerts`),
+        fetch(`${API_BASE}/api/operators/${activeOperatorId}/geofence-proximity`),
+        fetch(`${API_BASE}/api/supervisor/thresholds`),
+        fetch(`${API_BASE}/api/operators/${activeOperatorId}/duty-cycle`),
       ]);
 
       if (opsRes.ok) setOperators(await opsRes.json());
@@ -64,6 +96,14 @@ export function App() {
       if (alertsRes.ok) setAlerts(await alertsRes.json());
       if (anomRes.ok) setAnomalies(await anomRes.json());
       if (trainRes.ok) setTrainingData(await trainRes.json());
+      if (buddyRes && buddyRes.ok) {
+        const bData = await buddyRes.json();
+        setBuddyAlerts(bData);
+        if (bData.length > 0) setShowBuddyModal(true);
+      }
+      if (proxRes && proxRes.ok) setProximityStatus(await proxRes.json());
+      if (threshRes && threshRes.ok) setThresholds(await threshRes.json());
+      if (dutyOpRes && dutyOpRes.ok) setOperatorDutyCycle(await dutyOpRes.json());
     } catch (err) {
       console.error('Error fetching data from backend:', err);
     }
@@ -85,13 +125,30 @@ export function App() {
             console.log('[CABIN WS EVENT]', data);
             fetchData(); // Refresh on any event
 
+            if (data.payload && data.payload.type === 'buddy_failover') {
+              setShowBuddyModal(true);
+            }
+
+            if (data.payload && data.payload.type === 'thresholds_updated') {
+              setThresholds(data.payload.thresholds);
+            }
+
+            if (data.payload && (data.payload.type === 'duty_cycle_cooldown_scheduled' || data.payload.type === 'duty_cycle_cooldown_completed')) {
+              fetchData();
+            }
+
+            if (data.payload && data.payload.type === 'ml_model_recalibrated') {
+              setRecalibrationNotice(`ML Model Recalibrated: ${data.payload.metrics.model_version} (MAE Lift: ${data.payload.metrics.mae_lift_pct}%)`);
+              setTimeout(() => setRecalibrationNotice(null), 6000);
+            }
+
             if (data.payload && data.payload.status === 'active') {
               setActiveAlert({
                 alert_id: data.payload.alert_id,
                 alert_type: data.payload.alert_type,
                 machine_id: 'EXC001',
                 operator_id: activeOperatorId,
-                status: 'active'
+                status: 'active',
               });
             }
           } catch (e) {}
@@ -113,7 +170,7 @@ export function App() {
     name: 'Jake Miller',
     skill_level: 'Expert',
     timezone: 'America/New_York',
-    preferred_language: 'en'
+    preferred_language: 'en',
   };
 
   const assignedTasks = tasks.filter(t => t.operator_id === activeOperatorId);
@@ -125,7 +182,7 @@ export function App() {
       await fetch(`${API_BASE}/api/tasks/${taskId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, actual_time_min: actualMin })
+        body: JSON.stringify({ status, actual_time_min: actualMin }),
       });
       fetchData();
     } catch (e) {
@@ -142,8 +199,8 @@ export function App() {
           machine_id: 'EXC001',
           operator_id: activeOperatorId,
           alert_type: alertType,
-          notes: 'Triggered from In-Cab Dashboard touch button'
-        })
+          notes: 'Triggered from In-Cab Dashboard touch button',
+        }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -160,7 +217,7 @@ export function App() {
       await fetch(`${API_BASE}/api/alerts/${alertId}/acknowledge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ operator_id: activeOperatorId, notes: 'Cabin Verified Safe by Operator' })
+        body: JSON.stringify({ operator_id: activeOperatorId, notes: 'Cabin Verified Safe by Operator' }),
       });
       setActiveAlert(null);
       fetchData();
@@ -182,7 +239,7 @@ export function App() {
     await fetch(`${API_BASE}/api/machines/${machineId}/rental`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(rentalData)
+      body: JSON.stringify(rentalData),
     });
     fetchData();
   };
@@ -191,7 +248,7 @@ export function App() {
     await fetch(`${API_BASE}/api/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taskData)
+      body: JSON.stringify(taskData),
     });
     fetchData();
   };
@@ -201,11 +258,127 @@ export function App() {
       await fetch(`${API_BASE}/api/tasks/${taskId}/weather-approval`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supervisor_id: 'SUP001', action })
+        body: JSON.stringify({ supervisor_id: 'SUP001', action }),
       });
       fetchData();
     } catch (e) {
       console.error('Weather approval error:', e);
+    }
+  };
+
+  const handleRespondBuddyAlert = async (failoverId: string, status: 'en_route' | 'radio_contacted' | 'resolved', responderNotes?: string) => {
+    try {
+      await fetch(`${API_BASE}/api/buddy-alerts/${failoverId}/respond`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, notes: responderNotes }),
+      });
+      fetchData();
+      if (status === 'resolved') {
+        setShowBuddyModal(false);
+      }
+    } catch (e) {
+      console.error('Buddy alert response error:', e);
+    }
+  };
+
+  const handleAcknowledgeProximity = async () => {
+    try {
+      await fetch(`${API_BASE}/api/operators/${activeOperatorId}/geofence-proximity/acknowledge`, {
+        method: 'POST',
+      });
+      fetchData();
+    } catch (e) {
+      console.error('Proximity acknowledge error:', e);
+    }
+  };
+
+  const handleSaveThresholds = async (updated: Partial<SupervisorThresholdsData>) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/supervisor/thresholds`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setThresholds(data);
+        fetchData();
+      }
+    } catch (e) {
+      console.error('Save thresholds error:', e);
+    }
+  };
+
+  const handleSwitchRoleWithJwt = async (newRole: 'operator' | 'supervisor') => {
+    setRole(newRole);
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/quick-token/${newRole}`, { method: 'POST' });
+      if (res.ok) {
+        const tokenData = await res.json();
+        setJwtToken(tokenData.access_token);
+        localStorage.setItem('cat_jwt_token', tokenData.access_token);
+        if (newRole === 'operator') {
+          setActiveOperatorId(tokenData.user_id);
+        }
+      }
+    } catch (e) {
+      console.warn('JWT quick token error:', e);
+    }
+  };
+
+  const handleRecalibrateML = async () => {
+    setIsRecalibrating(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/ml/recalibrate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
+        },
+        body: JSON.stringify({
+          supervisor_id: 'SUP001',
+          idle_bias_adjustment_pct: 12.0,
+          sensitivity_factor: 1.05,
+          reason: 'Manual supervisor dashboard calibration',
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setRecalibrationNotice(`ML Recalibrated: ${data.model_version} | MAE Lift: ${data.mae_lift_pct}% error reduction vs baseline.`);
+        setTimeout(() => setRecalibrationNotice(null), 6000);
+        fetchData();
+      }
+    } catch (e) {
+      console.error('Recalibrate error:', e);
+    } finally {
+      setIsRecalibrating(false);
+    }
+  };
+
+  const handleScheduleCooldown = async (machineId: string) => {
+    try {
+      await fetch(`${API_BASE}/api/fleet/duty-cycles/${machineId}/schedule-cooldown`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ supervisor_id: 'SUP001', notes: 'Scheduled via portal' }),
+      });
+      fetchData();
+    } catch (e) {
+      console.error('Schedule cooldown error:', e);
+    }
+  };
+
+  const handleCompleteCooldown = async (machineId: string) => {
+    try {
+      await fetch(`${API_BASE}/api/fleet/duty-cycles/${machineId}/complete-cooldown`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verified_by: activeOperatorId }),
+      });
+      fetchData();
+    } catch (e) {
+      console.error('Complete cooldown error:', e);
     }
   };
 
@@ -216,8 +389,8 @@ export function App() {
       body: JSON.stringify({
         scenario_id: scenarioId,
         option_id: optionId,
-        operator_id: activeOperatorId
-      })
+        operator_id: activeOperatorId,
+      }),
     });
     const result = await res.json();
     // Refresh training data
@@ -235,13 +408,13 @@ export function App() {
         flexDirection: 'column',
         backgroundColor: 'var(--theme-bg)',
         color: 'var(--theme-text-primary)',
-        transition: 'background-color 0.25s ease, color 0.25s ease'
+        transition: 'background-color 0.25s ease, color 0.25s ease',
       }}
     >
       {/* Top Bar with Role Switcher & Controls */}
       <Header
         currentRole={role}
-        onRoleChange={setRole}
+        onRoleChange={handleSwitchRoleWithJwt}
         activeOperatorId={activeOperatorId}
         onOperatorChange={setActiveOperatorId}
         operators={operators}
@@ -255,23 +428,36 @@ export function App() {
         {role === 'operator' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Cabin HUD Machine & Shift Banner */}
-            <div style={{
-              backgroundColor: 'var(--theme-banner-bg)',
-              border: '1px solid var(--theme-banner-border)',
-              borderLeft: '4px solid var(--cat-yellow)',
-              boxShadow: 'var(--theme-shadow)',
-              borderRadius: '12px',
-              padding: '1.25rem 1.5rem',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '1rem',
-              transition: 'background-color 0.25s ease'
-            }}>
+            <div
+              style={{
+                backgroundColor: 'var(--theme-banner-bg)',
+                border: '1px solid var(--theme-banner-border)',
+                borderLeft: '4px solid var(--cat-yellow)',
+                boxShadow: 'var(--theme-shadow)',
+                borderRadius: '12px',
+                padding: '1.25rem 1.5rem',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1rem',
+                transition: 'background-color 0.25s ease',
+              }}
+            >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <div style={{ backgroundColor: '#111111', color: '#FFCD11', border: '1px solid #333333', padding: '0.25rem 0.5rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <div
+                    style={{
+                      backgroundColor: '#111111',
+                      color: '#FFCD11',
+                      border: '1px solid #333333',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '6px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
                     <HardHat size={16} />
                     <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.04em' }}>IN-CAB HUD</span>
                   </div>
@@ -295,7 +481,17 @@ export function App() {
                   <GraduationCap size={18} color="#FFCD11" />
                   {t('trainingHub')}
                   {trainingData?.operator_progress && (
-                    <span style={{ backgroundColor: '#FFCD11', color: '#111111', padding: '2px 7px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800, marginLeft: '4px' }}>
+                    <span
+                      style={{
+                        backgroundColor: '#FFCD11',
+                        color: '#111111',
+                        padding: '2px 7px',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        marginLeft: '4px',
+                      }}
+                    >
                       {trainingData.operator_progress.points} pts
                     </span>
                   )}
@@ -313,18 +509,20 @@ export function App() {
             </div>
 
             {/* Safety Simulation Triggers banner */}
-            <div style={{
-              backgroundColor: 'var(--theme-subtle-bg)',
-              border: '1px solid var(--theme-subtle-border)',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '0.75rem',
-              fontSize: '0.85rem'
-            }}>
+            <div
+              style={{
+                backgroundColor: 'var(--theme-subtle-bg)',
+                border: '1px solid var(--theme-subtle-border)',
+                borderRadius: '8px',
+                padding: '0.75rem 1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                fontSize: '0.85rem',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--cat-yellow)', fontWeight: 700 }}>
                 <span>⚡ Safety Simulator Triggers:</span>
               </div>
@@ -341,8 +539,31 @@ export function App() {
                 >
                   Simulate Proximity Hazard
                 </button>
+                <button
+                  onClick={() => handleTriggerSos('Operator Fatigue / Microsleep Detected (>2s eye closure)')}
+                  className="cat-btn cat-btn-outline cat-btn-sm"
+                >
+                  Simulate Fatigue Alert
+                </button>
               </div>
             </div>
+
+            {/* Critical Perimeter Geofence Breach Banner if active */}
+            {proximityStatus && (proximityStatus.is_geofence_breached || proximityStatus.warning_level === 'critical') && (
+              <OperatorGeofenceBanner
+                proximity={proximityStatus}
+                onAcknowledge={handleAcknowledgeProximity}
+              />
+            )}
+
+            {/* Thermal / Duty Cycle Cooldown Banner if required */}
+            {operatorDutyCycle && (operatorDutyCycle.is_cooldown_required || operatorDutyCycle.cooldown_status === 'cooling_down') && (
+              <DutyCycleBanner
+                dutyCycle={operatorDutyCycle}
+                onScheduleCooldown={handleScheduleCooldown}
+                onCompleteCooldown={handleCompleteCooldown}
+              />
+            )}
 
             {/* Main In-Cab Layout: Tasks & Voice Assistant */}
             <div className="cat-grid-dashboard">
@@ -393,6 +614,19 @@ export function App() {
                 )}
               </div>
             </div>
+
+            {/* Background Fatigue Vision Service */}
+            <div style={{ display: 'none' }}>
+              <FatigueMonitor
+                operatorId={activeOperatorId}
+                machineId={currentOperator.assigned_machine_id || 'EXC001'}
+                onFatigueAlert={() => {
+                  fetchData();
+                  handleTriggerSos('Operator Fatigue / Microsleep Detected (>2s eye closure)');
+                }}
+                apiBase={API_BASE}
+              />
+            </div>
           </div>
         )}
 
@@ -402,19 +636,21 @@ export function App() {
         {role === 'supervisor' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Top Supervisor Controls & Metrics */}
-            <div style={{
-              backgroundColor: 'var(--theme-card-bg)',
-              border: '1px solid var(--theme-card-border)',
-              boxShadow: 'var(--theme-shadow)',
-              borderRadius: '12px',
-              padding: '1.25rem 1.5rem',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '1rem',
-              transition: 'background-color 0.25s ease'
-            }}>
+            <div
+              style={{
+                backgroundColor: 'var(--theme-card-bg)',
+                border: '1px solid var(--theme-card-border)',
+                boxShadow: 'var(--theme-shadow)',
+                borderRadius: '12px',
+                padding: '1.25rem 1.5rem',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1rem',
+                transition: 'background-color 0.25s ease',
+              }}
+            >
               <div>
                 <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--theme-text-primary)' }}>
                   Marcus Vance &mdash; Site Operations Hub
@@ -435,6 +671,25 @@ export function App() {
                 </button>
 
                 <button
+                  onClick={() => setShowThresholdModal(true)}
+                  className="cat-btn cat-btn-outline"
+                  style={{ minHeight: '44px', fontSize: '0.875rem' }}
+                >
+                  <Sliders size={16} />
+                  Site Thresholds
+                </button>
+
+                <button
+                  onClick={handleRecalibrateML}
+                  disabled={isRecalibrating}
+                  className="cat-btn cat-btn-outline"
+                  style={{ minHeight: '44px', fontSize: '0.875rem' }}
+                >
+                  <Sparkles size={16} color="var(--cat-yellow)" />
+                  {isRecalibrating ? 'Recalibrating...' : 'Recalibrate ML'}
+                </button>
+
+                <button
                   onClick={fetchData}
                   className="cat-btn cat-btn-outline"
                   style={{ minHeight: '44px', fontSize: '0.875rem' }}
@@ -445,17 +700,39 @@ export function App() {
               </div>
             </div>
 
+            {/* Recalibration Notice if active */}
+            {recalibrationNotice && (
+              <div
+                style={{
+                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid #10B981',
+                  borderRadius: '8px',
+                  padding: '0.75rem 1rem',
+                  color: '#34D399',
+                  fontSize: '0.875rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <Sparkles size={16} />
+                <span>{recalibrationNotice}</span>
+              </div>
+            )}
+
             {/* Weather Re-Approval Gate for High Wind / Heavy Rain Hazards */}
             {tasks.filter(t => t.weather_reapproval_required).length > 0 && (
-              <div style={{
-                backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                border: '1px solid var(--cat-warning)',
-                borderRadius: '10px',
-                padding: '1.25rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem'
-              }}>
+              <div
+                style={{
+                  backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                  border: '1px solid var(--cat-warning)',
+                  borderRadius: '10px',
+                  padding: '1.25rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--cat-warning)', fontWeight: 800, fontSize: '0.95rem' }}>
                     <CloudRain size={20} />
@@ -477,7 +754,7 @@ export function App() {
                         padding: '0.75rem 1rem',
                         borderRadius: '6px',
                         flexWrap: 'wrap',
-                        gap: '0.75rem'
+                        gap: '0.75rem',
                       }}
                     >
                       <div>
@@ -542,13 +819,14 @@ export function App() {
         )}
       </main>
 
-      {/* SOS Alert Modal with 45s Countdown & Auto-Escalation */}
+      {/* SOS Alert Modal with dynamic Countdown & Auto-Escalation */}
       {activeAlert && (
         <SosAlertModal
           activeAlert={activeAlert}
           onAcknowledge={handleAcknowledgeAlert}
           onEscalate={handleEscalateAlert}
           onClose={() => setActiveAlert(null)}
+          sosTimeoutSec={thresholds?.sos_timeout_sec || 45}
         />
       )}
 
@@ -570,6 +848,23 @@ export function App() {
           machines={machines}
           onClose={() => setShowSchedulerModal(false)}
           onTaskCreated={handleCreateTask}
+        />
+      )}
+
+      {/* Site Thresholds & Safety Limits Configuration Modal */}
+      <ThresholdConfigModal
+        isOpen={showThresholdModal}
+        onClose={() => setShowThresholdModal(false)}
+        currentThresholds={thresholds}
+        onSave={handleSaveThresholds}
+      />
+
+      {/* Proximity Buddy Emergency Failover Modal */}
+      {role === 'operator' && buddyAlerts.length > 0 && showBuddyModal && (
+        <BuddyAlertModal
+          failover={buddyAlerts[0]}
+          onRespond={handleRespondBuddyAlert}
+          onClose={() => setShowBuddyModal(false)}
         />
       )}
     </div>

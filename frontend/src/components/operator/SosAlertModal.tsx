@@ -16,6 +16,7 @@ interface SosAlertModalProps {
   onAcknowledge: (alertId: string) => void;
   onEscalate: (alertId: string) => void;
   onClose: () => void;
+  sosTimeoutSec?: number;
 }
 
 export const SosAlertModal: React.FC<SosAlertModalProps> = ({
@@ -23,9 +24,10 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
   onAcknowledge,
   onEscalate,
   onClose,
+  sosTimeoutSec = 45,
 }) => {
   const { t } = useTranslation();
-  const [secondsRemaining, setSecondsRemaining] = useState(45);
+  const [secondsRemaining, setSecondsRemaining] = useState(sosTimeoutSec);
   const [isEscalated, setIsEscalated] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -33,7 +35,7 @@ export const SosAlertModal: React.FC<SosAlertModalProps> = ({
   useEffect(() => {
     if (!activeAlert || activeAlert.status !== 'active') return;
 
-    setSecondsRemaining(45);
+    setSecondsRemaining(sosTimeoutSec);
     setIsEscalated(false);
 
     try {
