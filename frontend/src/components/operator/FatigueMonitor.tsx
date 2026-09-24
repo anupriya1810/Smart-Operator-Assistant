@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { API_BASE } from '../../config';
 
 // Declarations for global MediaPipe objects loaded via CDN
 declare global {
@@ -72,7 +73,7 @@ export const FatigueMonitor: React.FC<FatigueMonitorProps> = ({
   operatorId,
   machineId = 'EXC001',
   onFatigueAlert,
-  apiBase = 'http://localhost:8000',
+  apiBase = API_BASE,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

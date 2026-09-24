@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Cpu, X, CloudRain, Wind, Sun, Cloud, AlertTriangle, MapPin, Sparkles } from 'lucide-react';
 import { localInputToUtcIso } from '../../utils/timezone';
+import { API_BASE } from '../../config';
 
 interface TaskSchedulerModalProps {
   operators: Array<{ operator_id: string; name: string; skill_level: string }>;
@@ -61,7 +62,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
     const timer = setTimeout(async () => {
       try {
         const utcStart = localInputToUtcIso(scheduledStartLocal);
-        const res = await fetch(`http://127.0.0.1:8000/api/weather/site?latitude=${coords.lat}&longitude=${coords.lon}&scheduled_time=${encodeURIComponent(utcStart)}`);
+        const res = await fetch(`${API_BASE}/api/weather/site?latitude=${coords.lat}&longitude=${coords.lon}&scheduled_time=${encodeURIComponent(utcStart)}`);
         if (res.ok) {
           const data = await res.json();
           setSiteWeather(data);
@@ -88,7 +89,7 @@ export const TaskSchedulerModal: React.FC<TaskSchedulerModalProps> = ({
     const timer = setTimeout(async () => {
       try {
         const utcStart = localInputToUtcIso(scheduledStartLocal);
-        const res = await fetch('http://127.0.0.1:8000/api/predict/task-time', {
+        const res = await fetch(`${API_BASE}/api/predict/task-time`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

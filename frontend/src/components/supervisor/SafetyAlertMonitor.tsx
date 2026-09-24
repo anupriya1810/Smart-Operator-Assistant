@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShieldAlert, CheckCircle, Clock, BellRing, ChevronDown, ChevronUp, GraduationCap } from 'lucide-react';
 import { formatUtcToLocal } from '../../utils/timezone';
+import { API_BASE } from '../../config';
 
 export interface AlertItem {
   alert_id: string;
@@ -35,7 +36,7 @@ export const SafetyAlertMonitor: React.FC<SafetyAlertMonitorProps> = ({
 
   const handleAssignTraining = async (alertId: string, operatorId: string) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/alerts/${alertId}/assign-training`, {
+      const res = await fetch(`${API_BASE}/api/alerts/${alertId}/assign-training`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scenario_id: 'SCEN-SAFE-01' })

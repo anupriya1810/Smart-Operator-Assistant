@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { API_BASE } from '../config';
 
 interface VoiceAgentProps {
   operatorId: string;
@@ -80,7 +81,7 @@ export function useVoiceAgent({ operatorId, machineId, onCommandExecuted }: Voic
 
   const sendVoiceCommand = async (spokenText: string) => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/voice/command', {
+      const res = await fetch(`${API_BASE}/api/voice/command`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

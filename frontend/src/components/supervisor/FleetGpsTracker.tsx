@@ -10,6 +10,7 @@ import {
   RefreshCw,
   BellRing
 } from 'lucide-react';
+import { API_BASE } from '../../config';
 
 interface MachineGps {
   machine_id: string;
@@ -79,9 +80,9 @@ export const FleetGpsTracker: React.FC<FleetGpsTrackerProps> = ({ supervisorTime
     try {
       setLoading(true);
       const [machRes, geoRes, anomRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/machines'),
-        fetch('http://127.0.0.1:8000/api/fleet/geofences'),
-        fetch('http://127.0.0.1:8000/api/fleet/gps/anomalies')
+        fetch(`${API_BASE}/api/machines`),
+        fetch(`${API_BASE}/api/fleet/geofences`),
+        fetch(`${API_BASE}/api/fleet/gps/anomalies`)
       ]);
 
       if (machRes.ok) {
@@ -107,7 +108,7 @@ export const FleetGpsTracker: React.FC<FleetGpsTrackerProps> = ({ supervisorTime
 
   const fetchTracesForMachine = async (id: string) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/fleet/gps/traces?machine_id=${id}`);
+      const res = await fetch(`${API_BASE}/api/fleet/gps/traces?machine_id=${id}`);
       if (res.ok) setTraces(await res.json());
     } catch (e) {
       console.error('Traces fetch error:', e);

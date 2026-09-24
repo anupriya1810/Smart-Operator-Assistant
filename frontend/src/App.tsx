@@ -23,6 +23,7 @@ import type { SupervisorThresholdsData } from './components/supervisor/Threshold
 import { DutyCycleBanner } from './components/operator/DutyCycleBanner';
 import type { DutyCycleInfo } from './components/operator/DutyCycleBanner';
 import { FatigueMonitor } from './components/operator/FatigueMonitor';
+import { API_BASE } from './config';
 import {
   AlertOctagon,
   GraduationCap,
@@ -34,8 +35,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 import './i18n/translations';
-
-const API_BASE = 'http://smart-operator-assistant.onrender.com';
 
 export function App() {
   const { t } = useTranslation();
